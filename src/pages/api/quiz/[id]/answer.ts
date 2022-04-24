@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { auth } from '../../../../lib/firebase-admin';
-import { addAnswer as addAnswerFb } from '../../../../utils/db';
+import { addAnswer as addAnswerFb } from '../../../../services/db';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {

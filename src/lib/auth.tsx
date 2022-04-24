@@ -1,5 +1,5 @@
 import { Context, createContext, useContext, useEffect, useState } from 'react';
-import { addUser } from '../utils/db';
+import { addUser } from '../services/db';
 import firebase from './firebase';
 
 interface Auth {

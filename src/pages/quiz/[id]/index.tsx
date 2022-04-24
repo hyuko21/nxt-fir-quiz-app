@@ -17,8 +17,8 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import Navbar from '../../../common/Navbar';
 import { useAuth } from '../../../lib/auth';
-import { getSingleQuiz } from '../../../utils/db';
-import { addAnswerApi } from '../../../utils/service';
+import { getSingleQuiz } from '../../../services/db';
+import { addAnswerApi } from '../../../services/api';
 
 const ShowQuiz = (quiz, onSubmit) => {
   return (

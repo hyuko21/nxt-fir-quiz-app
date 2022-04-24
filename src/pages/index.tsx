@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Navbar from '../common/Navbar';
-import { getAllQuiz, getAllUsers } from '../utils/db';
+import { getAllQuiz, getAllUsers } from '../services/db';
 
 const Home = (props) => {
   const quiz = JSON.parse(props.quiz);

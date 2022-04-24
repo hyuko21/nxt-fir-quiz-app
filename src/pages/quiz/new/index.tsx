@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import Navbar from '../../../common/Navbar';
 import { useAuth } from '../../../lib/auth';
-import { addQuizApi } from '../../../utils/service';
+import { addQuizApi } from '../../../services/api';
 
 const optionData = [
   {

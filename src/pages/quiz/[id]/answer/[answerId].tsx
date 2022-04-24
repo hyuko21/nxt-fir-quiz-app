@@ -12,7 +12,7 @@ import {
 import { NextPageContext } from 'next';
 import React from 'react';
 import Navbar from '../../../../common/Navbar';
-import { getAnswer, getSingleQuiz } from '../../../../utils/db';
+import { getAnswer, getSingleQuiz } from '../../../../services/db';
 
 const answer = (props) => {
   const quiz = JSON.parse(props.quiz);
