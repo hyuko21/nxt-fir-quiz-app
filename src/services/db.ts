@@ -41,6 +41,18 @@ export const addAnswer = async (data) => {
   return response;
 };
 
+export const getAllDisciplines = async () => {
+  const snapshot = await firebase.firestore().collection('disciplines').get()
+  const disciplines = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  return disciplines
+}
+
+export const getAllSubjectsByDiscipline = async (disciplineId: string) => {
+  const snapshot = await firebase.firestore().doc(disciplineId).collection('subjects').get()
+  const subjects = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  return subjects
+}
+
 export const getAnswer = async (answerId) => {
   const answerSnapshot = await firebase
     .firestore()
