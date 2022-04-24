@@ -10,14 +10,14 @@ interface Auth {
   token: string | null;
 }
 
-interface AuthContext {
+interface IAuthContext {
   auth: Auth | null;
   loading: boolean;
   siginWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
-const authContext: Context<AuthContext> = createContext<AuthContext>({
+const AuthContext: Context<IAuthContext> = createContext<IAuthContext>({
   auth: null,
   loading: true,
   siginWithGoogle: async () => {},
@@ -89,7 +89,7 @@ function useProvideAuth() {
 
 export function AuthProvider({ children }: any) {
   const auth = useProvideAuth();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
-export const useAuth = () => useContext(authContext);
+export const useAuth = () => useContext(AuthContext);
