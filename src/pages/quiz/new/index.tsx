@@ -14,6 +14,9 @@ import {
   SimpleGrid,
   Text,
   Textarea,
+  RadioGroup,
+  Stack,
+  Radio,
 } from '@chakra-ui/react';
 import { Field, FieldArray, Form, Formik, getIn } from 'formik';
 import { useRouter } from 'next/router';
@@ -23,40 +26,7 @@ import * as yup from 'yup';
 import Navbar from '../../../common/Navbar';
 import { useAuth } from '../../../lib/auth';
 import { addQuizApi } from '../../../services/api';
-
-const optionData = [
-  {
-    label: 'Option A:',
-  },
-  {
-    label: 'Option B:',
-  },
-  {
-    label: 'Option C:',
-  },
-  {
-    label: 'Option D:',
-  },
-];
-
-const answerOption = [
-  {
-    label: 'A',
-    answer: 0,
-  },
-  {
-    label: 'B',
-    answer: 1,
-  },
-  {
-    label: 'C',
-    answer: 2,
-  },
-  {
-    label: 'D',
-    answer: 3,
-  },
-];
+import { getOptionsForQuestionType, QuestionType, questionTypes } from '../../../utils/quiz';
 
 const Index = () => {
   const { auth, loading } = useAuth();
@@ -71,8 +41,9 @@ const Index = () => {
 
   const questionsData = {
     title: '',
-    options: [{ title: '' }, { title: '' }, { title: '' }, { title: '' }],
-    answer: '0',
+    type: QuestionType.MULTICHOISE,
+    options: getOptionsForQuestionType(QuestionType.MULTICHOISE),
+    answer: 0,
   };
 
   const initialValues = {
@@ -83,15 +54,16 @@ const Index = () => {
 
   const validationSchema = yup.object().shape({
     title: yup.string().required('Required'),
-    description: yup.string().required('Required'),
+    description: yup.string(),
     questions: yup
       .array()
       .of(
         yup.object().shape({
-          title: yup.string().required('Required!'),
+          title: yup.string().required('Required'),
+          type: yup.string().oneOf(Object.values(QuestionType)).required('Required'),
           options: yup.array().of(
             yup.object().shape({
-              title: yup.string().required('Required!'),
+              title: yup.string().required('Required'),
             })
           ),
         })
@@ -109,7 +81,7 @@ const Index = () => {
           return {
             ...question,
             options: question.options.map((option) => {
-              return { ...option, optionId: uuidv4() };
+              return { title: option.title, optionId: uuidv4() };
             }),
             questionId: uuidv4(),
           };
@@ -183,7 +155,7 @@ const Index = () => {
                       <FieldArray {...field} name="questions" id="questions">
                         {(fieldArrayProps) => {
                           const { push, remove, form } = fieldArrayProps;
-                          const { values, errors, touched } = form;
+                          const { values, errors, touched, setFieldValue } = form;
                           const { questions } = values;
                           const errorHandler = (name) => {
                             const error = getIn(errors, name);
@@ -220,36 +192,82 @@ const Index = () => {
                                         )}
                                       </FormErrorMessage>
                                     </FormControl>
-                                    <SimpleGrid
-                                      minChildWidth="300px"
-                                      spacing="10px"
-                                      mb={{ base: 4 }}
-                                    >
-                                      {optionData.map((option, subIndex) => (
+                                    <Field name={`questions[${index}][type]`}>
+                                      {({ field: questionTypeField }) => (
                                         <FormControl
-                                          mb={2}
-                                          key={subIndex}
                                           isInvalid={errorHandler(
-                                            `questions[${index}][options][${subIndex}].title`
+                                            `questions[${index}][type]`
                                           )}
                                         >
                                           <FormLabel
-                                            htmlFor={`questions[${index}][options][${subIndex}].title`}
+                                            htmlFor={`questions[${index}][type]`}
                                           >
-                                            {option.label}
+                                            Question Type:
                                           </FormLabel>
-                                          <Input
-                                            name={`questions[${index}][options][${subIndex}].title`}
-                                            as={Field}
-                                          />
+                                          <RadioGroup
+                                            defaultValue={_question.type}
+                                            onChange={(nextValue: QuestionType) => {
+                                              setFieldValue(`questions[${index}][options]`, getOptionsForQuestionType(nextValue))
+                                            }}
+                                            mb={
+                                              !errorHandler(
+                                                `questions[${index}][type]`
+                                              ) && 3
+                                            }
+                                          >
+                                            <Stack direction='row'>
+                                            {questionTypes.map((questionType, key) => (
+                                              <Radio
+                                                {...questionTypeField}
+                                                name={`questions[${index}][type]`}
+                                                value={questionType.code}
+                                                key={key}
+                                              >
+                                                {questionType.label}
+                                              </Radio>
+                                            ))}
+                                            </Stack>
+                                          </RadioGroup>
                                           <FormErrorMessage>
                                             {errorHandler(
-                                              `questions[${index}][options][${subIndex}].title`
+                                              `questions[${index}][type]`
                                             )}
                                           </FormErrorMessage>
                                         </FormControl>
-                                      ))}
-                                    </SimpleGrid>
+                                      )}
+                                    </Field>
+                                    {_question.type === QuestionType.MULTICHOISE && (
+                                      <SimpleGrid
+                                        minChildWidth="300px"
+                                        spacing="10px"
+                                        mb={{ base: 4 }}
+                                      >
+                                        {_question.options.map((option, subIndex) => (
+                                          <FormControl
+                                            mb={2}
+                                            key={subIndex}
+                                            isInvalid={errorHandler(
+                                              `questions[${index}][options][${subIndex}].title`
+                                            )}
+                                          >
+                                            <FormLabel
+                                              htmlFor={`questions[${index}][options][${subIndex}].title`}
+                                            >
+                                              {option.label}
+                                            </FormLabel>
+                                            <Input
+                                              name={`questions[${index}][options][${subIndex}].title`}
+                                              as={Field}
+                                            />
+                                            <FormErrorMessage>
+                                              {errorHandler(
+                                                `questions[${index}][options][${subIndex}].title`
+                                              )}
+                                            </FormErrorMessage>
+                                          </FormControl>
+                                        ))}
+                                      </SimpleGrid>
+                                    )}
                                     <Box>
                                       <Text mb="8px">Correct Answer:</Text>
                                       <Field
@@ -260,12 +278,12 @@ const Index = () => {
                                           padding: '10px',
                                         }}
                                       >
-                                        {answerOption.map((value, key) => (
+                                        {_question.options.map((option, key) => (
                                           <option
-                                            value={value.answer}
+                                            value={option.answer}
                                             key={key}
                                           >
-                                            {value.label}
+                                            {option.code}
                                           </option>
                                         ))}
                                       </Field>
