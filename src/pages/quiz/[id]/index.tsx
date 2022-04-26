@@ -15,7 +15,6 @@ import { Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import Navbar from '../../../common/Navbar';
 import { useAuth } from '../../../lib/auth';
 import { getSingleQuiz } from '../../../services/db';
 import { addAnswerApi } from '../../../services/api';
@@ -117,12 +116,7 @@ const SingleQuiz = (props) => {
     }
   };
 
-  return (
-    <>
-      <Navbar />
-      {quiz && ShowQuiz(quiz, onSubmit)}
-    </>
-  );
+  return quiz && ShowQuiz(quiz, onSubmit);
 };
 
 export async function getServerSideProps(context: NextPageContext) {

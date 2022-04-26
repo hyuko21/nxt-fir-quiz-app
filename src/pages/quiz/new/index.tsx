@@ -12,11 +12,11 @@ import {
   IconButton,
   Input,
   SimpleGrid,
-  Text,
   Textarea,
   RadioGroup,
   Stack,
   Radio,
+  Select,
 } from '@chakra-ui/react';
 import { CUIAutoComplete } from 'chakra-ui-autocomplete';
 import { Field, FieldArray, Form, Formik, getIn } from 'formik';
@@ -24,7 +24,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-import Navbar from '../../../common/Navbar';
 import { useApp } from '../../../lib/app';
 import { useAuth } from '../../../lib/auth';
 import { addQuizApi } from '../../../services/api';
@@ -49,19 +48,20 @@ const Index = () => {
   }, [])
 
   useEffect(() => {
-    if (disciplines.list.length && selectableDisciplines.length === 0) {
+    if (disciplines.list.length) {
       setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
     }
-    if (subjects.list.length && selectableSubjects.length === 0) {
+    if (subjects.list.length) {
       setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
     }
-  }, [disciplines.list.length, subjects.list.length])
+  }, [disciplines.list, subjects.list])
 
   const questionsData = {
     title: '',
     type: QuestionType.MULTICHOISE,
     options: getOptionsForQuestionType(QuestionType.MULTICHOISE),
-    answer: 0,
+    answer: '0',
+    answerReason: ''
   };
 
   const initialValues = {
@@ -88,6 +88,7 @@ const Index = () => {
               title: yup.string().required('Required'),
             })
           ),
+          answer: yup.string().required('Required')
         })
       )
       .required('Must add a question'),
@@ -119,330 +120,359 @@ const Index = () => {
   };
 
   return (
-    <>
-      <Navbar />
-      <Container
-        maxW="3xl"
-        mt={5}
-        mb={5}
-        borderWidth="1px"
-        borderRadius="lg"
-        p={6}
-        boxShadow="xl"
+    <Container
+      maxW="3xl"
+      mt={5}
+      mb={5}
+      borderWidth="1px"
+      borderRadius="lg"
+      p={6}
+      boxShadow="xl"
+    >
+      <Formik
+        initialValues={initialValues}
+        onSubmit={submitHandler}
+        validationSchema={validationSchema}
       >
-        <Formik
-          initialValues={initialValues}
-          onSubmit={submitHandler}
-          validationSchema={validationSchema}
-        >
-          {(props) => (
-            <Form>
-              <Field name="discipline">
-                {({ field, form }) => {
-                  return (
-                    <FormControl
-                      isInvalid={form.errors.discipline && form.touched.discipline}
-                    >
-                      <FormLabel htmlFor="discipline" fontSize="xl" mb={-4}>
-                        Quiz Discipline
-                      </FormLabel>
-                      <CUIAutoComplete
-                        items={selectableDisciplines}
-                        label=''
-                        placeholder=''
-                        hideToggleButton
-                        renderCustomInput={(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            {...field}
-                            onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
-                            onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
-                            id='discipline'
-                          />
-                        )}
-                        selectedItems={[]}
-                        disableCreateItem
-                        onSelectedItemsChange={(changes) => {
-                          const nextSelected = changes.selectedItems[0]
+        {(props) => (
+          <Form>
+            <Field name="discipline">
+              {({ field, form }) => {
+                return (
+                  <FormControl
+                    isInvalid={form.errors.discipline && form.touched.discipline}
+                  >
+                    <FormLabel htmlFor="discipline" fontSize="xl" mb={-4}>
+                      Quiz Discipline
+                    </FormLabel>
+                    <CUIAutoComplete
+                      items={selectableDisciplines}
+                      label=''
+                      placeholder=''
+                      hideToggleButton
+                      renderCustomInput={(inputProps) => (
+                        <Input
+                          {...inputProps}
+                          {...field}
+                          onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
+                          onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
+                          id='discipline'
+                        />
+                      )}
+                      selectedItems={[]}
+                      listStyleProps={{position: 'absolute', zIndex: '9999'}}
+                      disableCreateItem
+                      onSelectedItemsChange={(changes) => {
+                        const nextSelected = changes.selectedItems[0]
+                        if (nextSelected?.label !== field.value) {
                           form.setFieldValue('discipline', nextSelected?.label)
+                          form.setFieldValue('subject', '')
                           nextSelected && getSubjectsByDiscipline(nextSelected.value)
-                        }}
-                      />
-                      <FormErrorMessage mt={-4}>{form.errors.discipline}</FormErrorMessage>
-                    </FormControl>
-                  )
-                }}
-              </Field>
-              <Field name="subject">
-                {({ field, form }) => {
-                  return (
-                    <FormControl
-                      isInvalid={form.errors.subject && form.touched.subject}
-                      isDisabled={!form.values.discipline}
-                    >
-                      <FormLabel htmlFor="subject" fontSize="xl" mt={4} mb={-4}>
-                        Quiz Subject
-                      </FormLabel>
-                      <CUIAutoComplete
-                        items={selectableSubjects}
-                        label=''
-                        placeholder=''
-                        hideToggleButton
-                        renderCustomInput={(inputProps) => (
-                          <Input
-                            {...inputProps}
-                            {...field}
-                            onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
-                            onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
-                            id='subject'
-                          />
-                        )}
-                        selectedItems={[]}
-                        disableCreateItem
-                        onSelectedItemsChange={(changes) => {
-                          const nextSelected = changes.selectedItems[0]
-                          form.setFieldValue('subject', nextSelected?.label)
-                        }}
-                      />
-                      <FormErrorMessage mt={-4}>{form.errors.subject}</FormErrorMessage>
-                    </FormControl>
-                  )
-                }}
-              </Field>
-              <Field name="title">
-                {({ field, form }) => (
-                  <FormControl
-                    isInvalid={form.errors.title && form.touched.title}
-                  >
-                    <FormLabel htmlFor="title" fontSize="xl" mt={4}>
-                      Quiz Title
-                    </FormLabel>
-                    <Input {...field} id="title" />
-                    <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+                        }
+                      }}
+                    />
+                    <FormErrorMessage mt={-4}>{form.errors.discipline}</FormErrorMessage>
                   </FormControl>
-                )}
-              </Field>
-              <Field name="description">
-                {({ field, form }) => (
+                )
+              }}
+            </Field>
+            <Field name="subject">
+              {({ field, form }) => {
+                return (
                   <FormControl
-                    isInvalid={
-                      form.errors.description && form.touched.description
-                    }
+                    isInvalid={form.errors.subject && form.touched.subject}
+                    isDisabled={!form.values.discipline}
                   >
-                    <FormLabel htmlFor="description" fontSize="xl" mt={4}>
-                      Quiz description
+                    <FormLabel htmlFor="subject" fontSize="xl" mt={4} mb={-4}>
+                      Quiz Subject
                     </FormLabel>
-                    <Textarea {...field} id="description" />
-                    <FormErrorMessage>
-                      {form.errors.description}
-                    </FormErrorMessage>
+                    <CUIAutoComplete
+                      items={selectableSubjects}
+                      label=''
+                      placeholder=''
+                      hideToggleButton
+                      renderCustomInput={(inputProps) => (
+                        <Input
+                          {...inputProps}
+                          {...field}
+                          onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
+                          onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
+                          id='subject'
+                        />
+                      )}
+                      selectedItems={[]}
+                      listStyleProps={{position: 'absolute', zIndex: '9999'}}
+                      disableCreateItem
+                      onSelectedItemsChange={(changes) => {
+                        const nextSelected = changes.selectedItems[0]
+                        form.setFieldValue('subject', nextSelected?.label)
+                      }}
+                    />
+                    <FormErrorMessage mt={-4}>{form.errors.subject}</FormErrorMessage>
                   </FormControl>
-                )}
-              </Field>
-              <Field name="questions">
-                {({ field }) => (
-                  <FormControl>
-                    <FormLabel htmlFor="questions" fontSize="xl" mt={4}>
-                      Enter your question data:
-                    </FormLabel>
-                    <Box ml={4}>
-                      <FieldArray {...field} name="questions" id="questions">
-                        {(fieldArrayProps) => {
-                          const { push, remove, form } = fieldArrayProps;
-                          const { values, errors, touched, setFieldValue } = form;
-                          const { questions } = values;
-                          const errorHandler = (name) => {
-                            const error = getIn(errors, name);
-                            const touch = getIn(touched, name);
-                            return touch && error ? error : null;
-                          };
-                          return (
-                            <div>
-                              {questions.map((_question, index) => {
-                                return (
-                                  <Flex key={index} direction="column">
-                                    <FormControl
-                                      isInvalid={errorHandler(
+                )
+              }}
+            </Field>
+            <Field name="title">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={form.errors.title && form.touched.title}
+                >
+                  <FormLabel htmlFor="title" fontSize="xl" mt={4}>
+                    Quiz Title
+                  </FormLabel>
+                  <Input {...field} id="title" />
+                  <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
+            <Field name="description">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={
+                    form.errors.description && form.touched.description
+                  }
+                >
+                  <FormLabel htmlFor="description" fontSize="xl" mt={4}>
+                    Quiz description
+                  </FormLabel>
+                  <Textarea {...field} id="description" />
+                  <FormErrorMessage>
+                    {form.errors.description}
+                  </FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
+            <Field name="questions">
+              {({ field }) => (
+                <FormControl>
+                  <FormLabel htmlFor="questions" fontSize="xl" mt={4}>
+                    Enter your question data:
+                  </FormLabel>
+                  <Box ml={4}>
+                    <FieldArray {...field} name="questions" id="questions">
+                      {(fieldArrayProps) => {
+                        const { push, remove, form } = fieldArrayProps;
+                        const { values, errors, touched, setFieldValue } = form;
+                        const { questions } = values;
+                        const errorHandler = (name) => {
+                          const error = getIn(errors, name);
+                          const touch = getIn(touched, name);
+                          return touch && error ? error : null;
+                        };
+                        return (
+                          <div>
+                            {questions.map((_question, index) => {
+                              return (
+                                <Flex key={index} direction="column">
+                                  <FormControl
+                                    isInvalid={errorHandler(
+                                      `questions[${index}][title]`
+                                    )}
+                                  >
+                                    <FormLabel
+                                      htmlFor={`questions[${index}][title]`}
+                                    >
+                                      Question Title:
+                                    </FormLabel>
+                                    <Input
+                                      name={`questions[${index}][title]`}
+                                      as={Field}
+                                      mb={
+                                        !errorHandler(
+                                          `questions[${index}][title]`
+                                        ) && 3
+                                      }
+                                    />
+                                    <FormErrorMessage>
+                                      {errorHandler(
                                         `questions[${index}][title]`
                                       )}
-                                    >
-                                      <FormLabel
-                                        htmlFor={`questions[${index}][title]`}
-                                      >
-                                        Question Title:
-                                      </FormLabel>
-                                      <Input
-                                        name={`questions[${index}][title]`}
-                                        as={Field}
-                                        mb={
-                                          !errorHandler(
-                                            `questions[${index}][title]`
-                                          ) && 3
-                                        }
-                                      />
-                                      <FormErrorMessage>
-                                        {errorHandler(
-                                          `questions[${index}][title]`
+                                    </FormErrorMessage>
+                                  </FormControl>
+                                  <Field name={`questions[${index}][type]`}>
+                                    {({ field: questionTypeField }) => (
+                                      <FormControl
+                                        isInvalid={errorHandler(
+                                          `questions[${index}][type]`
                                         )}
-                                      </FormErrorMessage>
-                                    </FormControl>
-                                    <Field name={`questions[${index}][type]`}>
-                                      {({ field: questionTypeField }) => (
-                                        <FormControl
-                                          isInvalid={errorHandler(
+                                      >
+                                        <FormLabel
+                                          htmlFor={`questions[${index}][type]`}
+                                        >
+                                          Question Type:
+                                        </FormLabel>
+                                        <RadioGroup
+                                          defaultValue={_question.type}
+                                          onChange={(nextValue: QuestionType) => {
+                                            setFieldValue(`questions[${index}][options]`, getOptionsForQuestionType(nextValue))
+                                          }}
+                                          mb={
+                                            !errorHandler(
+                                              `questions[${index}][type]`
+                                            ) && 3
+                                          }
+                                        >
+                                          <Stack direction='row'>
+                                          {questionTypes.map((questionType, key) => (
+                                            <Radio
+                                              {...questionTypeField}
+                                              name={`questions[${index}][type]`}
+                                              value={questionType.code}
+                                              key={key}
+                                            >
+                                              {questionType.label}
+                                            </Radio>
+                                          ))}
+                                          </Stack>
+                                        </RadioGroup>
+                                        <FormErrorMessage>
+                                          {errorHandler(
                                             `questions[${index}][type]`
+                                          )}
+                                        </FormErrorMessage>
+                                      </FormControl>
+                                    )}
+                                  </Field>
+                                  {_question.type === QuestionType.MULTICHOISE && (
+                                    <SimpleGrid
+                                      minChildWidth="300px"
+                                      spacing="10px"
+                                      mb={{ base: 4 }}
+                                    >
+                                      {_question.options.map((option, subIndex) => (
+                                        <FormControl
+                                          mb={2}
+                                          key={subIndex}
+                                          isInvalid={errorHandler(
+                                            `questions[${index}][options][${subIndex}].title`
                                           )}
                                         >
                                           <FormLabel
-                                            htmlFor={`questions[${index}][type]`}
+                                            htmlFor={`questions[${index}][options][${subIndex}].title`}
                                           >
-                                            Question Type:
+                                            {option.label}
                                           </FormLabel>
-                                          <RadioGroup
-                                            defaultValue={_question.type}
-                                            onChange={(nextValue: QuestionType) => {
-                                              setFieldValue(`questions[${index}][options]`, getOptionsForQuestionType(nextValue))
-                                            }}
-                                            mb={
-                                              !errorHandler(
-                                                `questions[${index}][type]`
-                                              ) && 3
-                                            }
-                                          >
-                                            <Stack direction='row'>
-                                            {questionTypes.map((questionType, key) => (
-                                              <Radio
-                                                {...questionTypeField}
-                                                name={`questions[${index}][type]`}
-                                                value={questionType.code}
-                                                key={key}
-                                              >
-                                                {questionType.label}
-                                              </Radio>
-                                            ))}
-                                            </Stack>
-                                          </RadioGroup>
+                                          <Input
+                                            name={`questions[${index}][options][${subIndex}].title`}
+                                            as={Field}
+                                          />
                                           <FormErrorMessage>
                                             {errorHandler(
-                                              `questions[${index}][type]`
+                                              `questions[${index}][options][${subIndex}].title`
                                             )}
                                           </FormErrorMessage>
                                         </FormControl>
-                                      )}
-                                    </Field>
-                                    {_question.type === QuestionType.MULTICHOISE && (
-                                      <SimpleGrid
-                                        minChildWidth="300px"
-                                        spacing="10px"
-                                        mb={{ base: 4 }}
+                                      ))}
+                                    </SimpleGrid>
+                                  )}
+                                  <Field name={`questions[${index}][answer]`}>
+                                    {({ field: questionAnswerField }) => (
+                                      <FormControl
+                                        isInvalid={errorHandler(
+                                          `questions[${index}][answer]`
+                                        )}
                                       >
-                                        {_question.options.map((option, subIndex) => (
-                                          <FormControl
-                                            mb={2}
-                                            key={subIndex}
-                                            isInvalid={errorHandler(
-                                              `questions[${index}][options][${subIndex}].title`
-                                            )}
-                                          >
-                                            <FormLabel
-                                              htmlFor={`questions[${index}][options][${subIndex}].title`}
+                                        <FormLabel
+                                          htmlFor={`questions[${index}][answer]`}
+                                        >
+                                          Correct Answer:
+                                        </FormLabel>
+                                        <Select
+                                          {...questionAnswerField}
+                                          mb={
+                                            !errorHandler(
+                                              `questions[${index}][answer]`
+                                            ) && 3
+                                          }
+                                        >
+                                          {_question.options.map((option, key) => (
+                                            <option
+                                              value={option.answer}
+                                              key={key}
                                             >
-                                              {option.label}
-                                            </FormLabel>
-                                            <Input
-                                              name={`questions[${index}][options][${subIndex}].title`}
-                                              as={Field}
-                                            />
-                                            <FormErrorMessage>
-                                              {errorHandler(
-                                                `questions[${index}][options][${subIndex}].title`
-                                              )}
-                                            </FormErrorMessage>
-                                          </FormControl>
-                                        ))}
-                                      </SimpleGrid>
+                                              {option.code}
+                                            </option>
+                                          ))}
+                                        </Select>
+                                        <FormErrorMessage>
+                                          {errorHandler(
+                                            `questions[${index}][answer]`
+                                          )}
+                                        </FormErrorMessage>
+                                      </FormControl>
                                     )}
-                                    <Box>
-                                      <Text mb="8px">Correct Answer:</Text>
-                                      <Field
-                                        component="select"
-                                        name={`questions[${index}][answer]`}
-                                        style={{
-                                          width: '100%',
-                                          padding: '10px',
-                                        }}
+                                  </Field>
+                                  <Field name={`questions[${index}][answerReason]`}>
+                                    {({ field: questionAnswerReasonField }) => (
+                                      <FormControl>
+                                        <FormLabel htmlFor={`questions[${index}][answerReason]`}>
+                                          Answer Reason:
+                                        </FormLabel>
+                                        <Textarea {...questionAnswerReasonField} id={`questions[${index}][answerReason]`} />
+                                      </FormControl>
+                                    )}
+                                  </Field>
+                                  <Flex
+                                    direction="row"
+                                    justify="flex-end"
+                                    mt={4}
+                                  >
+                                    {index > 0 && (
+                                      <IconButton
+                                        onClick={() => remove(index)}
+                                        aria-label="Remove Question"
+                                        icon={<MinusIcon />}
+                                        variant="ghost"
                                       >
-                                        {_question.options.map((option, key) => (
-                                          <option
-                                            value={option.answer}
-                                            key={key}
-                                          >
-                                            {option.code}
-                                          </option>
-                                        ))}
-                                      </Field>
-                                    </Box>
-                                    <Flex
-                                      direction="row"
-                                      justify="flex-end"
-                                      mt={4}
-                                    >
-                                      {index > 0 && (
-                                        <IconButton
-                                          onClick={() => remove(index)}
-                                          aria-label="Remove Question"
-                                          icon={<MinusIcon />}
-                                          variant="ghost"
-                                        >
-                                          -
-                                        </IconButton>
-                                      )}
-                                      {index === questions.length - 1 && (
-                                        <IconButton
-                                          onClick={() => push(questionsData)}
-                                          aria-label="Add Question"
-                                          icon={<AddIcon />}
-                                          variant="ghost"
-                                        >
-                                          +
-                                        </IconButton>
-                                      )}
-                                    </Flex>
-                                    {index !== questions.length - 1 && (
-                                      <Divider
-                                        mt={2}
-                                        mb={4}
-                                        css={{
-                                          boxShadow: '1px 1px #888888',
-                                        }}
-                                      />
+                                        -
+                                      </IconButton>
+                                    )}
+                                    {index === questions.length - 1 && (
+                                      <IconButton
+                                        onClick={() => push(questionsData)}
+                                        aria-label="Add Question"
+                                        icon={<AddIcon />}
+                                        variant="ghost"
+                                      >
+                                        +
+                                      </IconButton>
                                     )}
                                   </Flex>
-                                );
-                              })}
-                            </div>
-                          );
-                        }}
-                      </FieldArray>
-                    </Box>
-                  </FormControl>
-                )}
-              </Field>
-              <Center>
-                <Button
-                  colorScheme="green"
-                  isLoading={props.isSubmitting}
-                  type="submit"
-                  disabled={!(props.isValid && props.dirty)}
-                >
-                  Submit Quiz
-                </Button>
-              </Center>
-            </Form>
-          )}
-        </Formik>
-      </Container>
-    </>
+                                  {index !== questions.length - 1 && (
+                                    <Divider
+                                      mt={2}
+                                      mb={4}
+                                      css={{
+                                        boxShadow: '1px 1px #888888',
+                                      }}
+                                    />
+                                  )}
+                                </Flex>
+                              );
+                            })}
+                          </div>
+                        );
+                      }}
+                    </FieldArray>
+                  </Box>
+                </FormControl>
+              )}
+            </Field>
+            <Center>
+              <Button
+                colorScheme="green"
+                isLoading={props.isSubmitting}
+                type="submit"
+                disabled={!(props.isValid && props.dirty)}
+              >
+                Submit Quiz
+              </Button>
+            </Center>
+          </Form>
+        )}
+      </Formik>
+    </Container>
   );
 };
 

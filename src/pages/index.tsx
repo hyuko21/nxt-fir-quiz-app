@@ -2,7 +2,6 @@ import { Box, Container, Divider, Flex, Heading, SimpleGrid, Text } from '@chakr
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
-import Navbar from '../common/Navbar';
 import { getAllQuiz, getAllUsers } from '../services/db';
 
 const Home = (props) => {
@@ -37,7 +36,6 @@ const Home = (props) => {
       </Head>
       <main>
         <header>
-          <Navbar />
           <Container maxW="6xl">
             {quiz.length > 0 && (
               <SimpleGrid minChildWidth="400px">
