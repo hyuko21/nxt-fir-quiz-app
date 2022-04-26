@@ -1,6 +1,5 @@
 import { Context, createContext, useContext, useState } from 'react'
-import { getAllSubjectsByDiscipline } from '../services/db'
-import { getAllDisciplinesApi } from '../services/api'
+import { getAllDisciplinesApi, getAllSubjectsByDisciplineApi } from '../services/api'
 
 interface Discipline {
   id: string;
@@ -45,7 +44,8 @@ function useProvideApp() {
     setSubjects(prev => ({ ...prev, loading: true }))
     let result: Subject[];
     try {
-      result = await getAllSubjectsByDiscipline(disciplineId) as Subject[]
+      const { data } = await getAllSubjectsByDisciplineApi(disciplineId)
+      result = data.result
     } catch {
     } finally {
       setSubjects(prev => ({ ...prev, list: result, loading: false }))

@@ -45,3 +45,15 @@ export const getAllDisciplinesApi = async () => {
     throw error;
   }
 };
+
+export const getAllSubjectsByDisciplineApi = async (disciplineId: string) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const resp = await axios.get(`/api/disciplines/${disciplineId}/subjects`, { headers });
+    return resp;
+  } catch (error) {
+    throw error;
+  }
+};
