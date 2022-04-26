@@ -48,7 +48,7 @@ export const getAllDisciplines = async () => {
 }
 
 export const getAllSubjectsByDiscipline = async (disciplineId: string) => {
-  const snapshot = await firebase.firestore().doc(disciplineId).collection('subjects').get()
+  const snapshot = await firebase.firestore().collection('disciplines').doc(disciplineId).collection('subjects').get()
   const subjects = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
   return subjects
 }

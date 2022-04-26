@@ -13,6 +13,7 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "axios": "^0.21.1",
+    "chakra-ui-autocomplete": "^1.4.5",
     "firebase": "^8.3.2",
     "firebase-admin": "^9.6.0",
     "formik": "^2.2.6",

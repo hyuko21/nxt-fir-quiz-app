@@ -33,3 +33,15 @@ export const addAnswerApi = async (auth, quizId, values) => {
     throw error;
   }
 };
+
+export const getAllDisciplinesApi = async () => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const resp = await axios.get('/api/disciplines', { headers });
+    return resp;
+  } catch (error) {
+    throw error;
+  }
+};

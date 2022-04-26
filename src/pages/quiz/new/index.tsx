@@ -18,18 +18,23 @@ import {
   Stack,
   Radio,
 } from '@chakra-ui/react';
+import { CUIAutoComplete } from 'chakra-ui-autocomplete';
 import { Field, FieldArray, Form, Formik, getIn } from 'formik';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import Navbar from '../../../common/Navbar';
+import { useApp } from '../../../lib/app';
 import { useAuth } from '../../../lib/auth';
 import { addQuizApi } from '../../../services/api';
 import { getOptionsForQuestionType, QuestionType, questionTypes } from '../../../utils/quiz';
 
 const Index = () => {
   const { auth, loading } = useAuth();
+  const { disciplines, subjects, getDisciplines, getSubjectsByDiscipline } = useApp();
+  const [selectableDisciplines, setSelectableDisciplines] = useState([])
+  const [selectableSubjects, setSelectableSubjects] = useState([])
 
   const router = useRouter();
 
@@ -39,6 +44,19 @@ const Index = () => {
     }
   }, [auth, loading]);
 
+  useEffect(() => {
+    getDisciplines()
+  }, [])
+
+  useEffect(() => {
+    if (disciplines.list.length && selectableDisciplines.length === 0) {
+      setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
+    }
+    if (subjects.list.length && selectableSubjects.length === 0) {
+      setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
+    }
+  }, [disciplines.list.length, subjects.list.length])
+
   const questionsData = {
     title: '',
     type: QuestionType.MULTICHOISE,
@@ -47,12 +65,16 @@ const Index = () => {
   };
 
   const initialValues = {
+    discipline: '',
+    subject: '',
     title: '',
     description: '',
     questions: [questionsData],
   };
 
   const validationSchema = yup.object().shape({
+    discipline: yup.string().required('Required'),
+    subject: yup.string().required('Required'),
     title: yup.string().required('Required'),
     description: yup.string(),
     questions: yup
@@ -115,12 +137,84 @@ const Index = () => {
         >
           {(props) => (
             <Form>
+              <Field name="discipline">
+                {({ field, form }) => {
+                  return (
+                    <FormControl
+                      isInvalid={form.errors.discipline && form.touched.discipline}
+                    >
+                      <FormLabel htmlFor="discipline" fontSize="xl" mb={-4}>
+                        Quiz Discipline
+                      </FormLabel>
+                      <CUIAutoComplete
+                        items={selectableDisciplines}
+                        label=''
+                        placeholder=''
+                        hideToggleButton
+                        renderCustomInput={(inputProps) => (
+                          <Input
+                            {...inputProps}
+                            {...field}
+                            onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
+                            onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
+                            id='discipline'
+                          />
+                        )}
+                        selectedItems={[]}
+                        disableCreateItem
+                        onSelectedItemsChange={(changes) => {
+                          const nextSelected = changes.selectedItems[0]
+                          form.setFieldValue('discipline', nextSelected?.label)
+                          nextSelected && getSubjectsByDiscipline(nextSelected.value)
+                        }}
+                      />
+                      <FormErrorMessage mt={-4}>{form.errors.discipline}</FormErrorMessage>
+                    </FormControl>
+                  )
+                }}
+              </Field>
+              <Field name="subject">
+                {({ field, form }) => {
+                  return (
+                    <FormControl
+                      isInvalid={form.errors.subject && form.touched.subject}
+                      isDisabled={!form.values.discipline}
+                    >
+                      <FormLabel htmlFor="subject" fontSize="xl" mt={4} mb={-4}>
+                        Quiz Subject
+                      </FormLabel>
+                      <CUIAutoComplete
+                        items={selectableSubjects}
+                        label=''
+                        placeholder=''
+                        hideToggleButton
+                        renderCustomInput={(inputProps) => (
+                          <Input
+                            {...inputProps}
+                            {...field}
+                            onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
+                            onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
+                            id='subject'
+                          />
+                        )}
+                        selectedItems={[]}
+                        disableCreateItem
+                        onSelectedItemsChange={(changes) => {
+                          const nextSelected = changes.selectedItems[0]
+                          form.setFieldValue('subject', nextSelected?.label)
+                        }}
+                      />
+                      <FormErrorMessage mt={-4}>{form.errors.subject}</FormErrorMessage>
+                    </FormControl>
+                  )
+                }}
+              </Field>
               <Field name="title">
                 {({ field, form }) => (
                   <FormControl
                     isInvalid={form.errors.title && form.touched.title}
                   >
-                    <FormLabel htmlFor="title" fontSize="xl">
+                    <FormLabel htmlFor="title" fontSize="xl" mt={4}>
                       Quiz Title
                     </FormLabel>
                     <Input {...field} id="title" />
