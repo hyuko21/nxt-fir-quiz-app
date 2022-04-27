@@ -3,87 +3,125 @@ import {
   Center,
   Container,
   Divider,
+  Flex,
   FormControl,
-  FormLabel,
   Heading,
   HStack,
   RadioGroup,
-  SimpleGrid,
   Text,
+  Stack,
+  Radio,
+  Box,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../lib/auth';
 import { getSingleQuiz } from '../../../services/db';
 import { addAnswerApi } from '../../../services/api';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 
-const ShowQuiz = (quiz, onSubmit) => {
+const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
   return (
     <Container
       maxW="7xl"
       mt={5}
-      mb={5}
-      borderWidth="1px"
-      borderRadius="lg"
       p={6}
-      boxShadow="xl"
     >
-      <Center flexDirection="column">
-        <Heading>{quiz.title}</Heading>
-      </Center>
-      <Text mt={4}>{quiz.description}</Text>
-      <Heading mt={4} size="lg">
-        Questions:
-      </Heading>
-      <Divider
-        mt={4}
-        mb={4}
-        css={{
-          boxShadow: '1px 1px #888888',
-        }}
-      />
+      <Box mb={10}>
+        <Flex alignItems='center' gap='8px'>
+          <Heading size='sm'>{quiz.discipline}</Heading>
+          <ChevronRightIcon fontSize={24}/>
+          <Heading size='sm'>{quiz.subject}</Heading>
+        </Flex>
+        <Center flexDirection="column">
+          <Heading>{quiz.title}</Heading>
+        </Center>
+        <Text>{quiz.description}</Text>
+      </Box>
       <Formik initialValues={{}} onSubmit={onSubmit}>
         {(props) => (
           <Form>
-            {quiz.questions.map((singleQuiz, key) => (
-              <Field name={singleQuiz.questionId} key={key}>
-                {({ field, _form }) => (
-                  <FormControl
-                    as="fieldset"
-                    isRequired={true}
-                    mb={{ base: 4, md: 0 }}
-                  >
-                    <FormLabel as="legend">{singleQuiz.title}</FormLabel>
-                    <RadioGroup>
-                      <SimpleGrid minChildWidth="120px" mb={2}>
-                        {singleQuiz.options.map((option, subkey) => (
-                          <HStack key={subkey}>
-                            <Field
-                              {...field}
-                              type="radio"
-                              name={singleQuiz.questionId}
-                              value={option.optionId}
-                            />
-                            <Text>{option.title}</Text>
-                          </HStack>
-                        ))}
-                      </SimpleGrid>
-                    </RadioGroup>
-                  </FormControl>
-                )}
-              </Field>
-            ))}
-            <Center mt={10}>
+            {quiz.questions.map((singleQuiz, key) => {
+              return (
+                <Box
+                  borderWidth='1px'
+                  borderRadius='lg'
+                  padding={6}
+                  mt={10}
+                  key={key}
+                  backgroundColor={
+                    answered[singleQuiz.questionId] ? (
+                      answered[singleQuiz.questionId]?.isCorrect
+                      ? 'green.100'
+                      : 'red.100'
+                    ) : 'whiteAlpha.100'
+                  }
+                >
+                  <Field name={singleQuiz.questionId}>
+                    {({ field, form }) => (
+                      <FormControl
+                        isRequired={true}
+                        mb={{ base: 4, md: 0 }}
+                        isDisabled={answered[singleQuiz.questionId]}
+                      >
+                        <Heading mt={4} size="md">{singleQuiz.title}</Heading>
+                        <Divider
+                          mt={4}
+                          mb={4}
+                          css={{
+                            boxShadow: '1px 1px #333'
+                          }}
+                        />
+                        <RadioGroup
+                          name={singleQuiz.questionId}
+                          onChange={(nextValue) => form.setFieldValue(singleQuiz.questionId, nextValue)}
+                        >
+                          <Stack mb={2} spacing={2}>
+                            {singleQuiz.options.map((option, subkey) => (
+                              <HStack key={subkey}>
+                                <Radio
+                                  {...field}
+                                  name={singleQuiz.questionId}
+                                  value={option.optionId}
+                                />
+                                <Text fontSize="lg">{option.title}</Text>
+                              </HStack>
+                            ))}
+                          </Stack>
+                        </RadioGroup>
+                        <Button
+                          isDisabled={!props.values[singleQuiz.questionId] || answered[singleQuiz.questionId]}
+                          mt={4}
+                          colorScheme="twitter"
+                          onClick={() => onAnswer(singleQuiz, props.values[singleQuiz.questionId])}
+                        >
+                          Submit Answer
+                        </Button>
+                        {answered[singleQuiz.questionId] && !answered[singleQuiz.questionId].isCorrect && (
+                          <Stack mt={8} spacing={2}>
+                            <Heading size='md' color='red.500'>Wrong answer</Heading>
+                            {answered[singleQuiz.questionId].reason && <Text fontSize='lg'><b>Reason:</b> {answered[singleQuiz.questionId].reason}</Text>}
+                          </Stack>
+                        )}
+                      </FormControl>
+                    )}
+                  </Field>
+                </Box>
+              )
+            })}
+            {/* <Center mt={10}>
               <Button
                 type="submit"
                 isLoading={props.isSubmitting}
+                isDisabled={answered.count < quiz.questions.length}
                 colorScheme="green"
               >
                 Submit
               </Button>
-            </Center>
+            </Center> */}
           </Form>
         )}
       </Formik>
@@ -93,6 +131,7 @@ const ShowQuiz = (quiz, onSubmit) => {
 
 const SingleQuiz = (props) => {
   const { auth, loading } = useAuth();
+  const [answered, setAnswered] = useState({ count: 0 });
 
   const router = useRouter();
 
@@ -116,7 +155,16 @@ const SingleQuiz = (props) => {
     }
   };
 
-  return quiz && ShowQuiz(quiz, onSubmit);
+  const onAnswer = (question, optionId: string) => {
+    const selectedOptionIndex = question.options.findIndex((option) => option.optionId === optionId)
+    const answer = {
+      isCorrect: String(selectedOptionIndex) === question.answer,
+      reason: question.answerReason
+    }
+    setAnswered(prev => ({ ...prev, [question.questionId]: answer, count: prev.count + 1 }))
+  }
+
+  return quiz && ShowQuiz(quiz, answered, onSubmit, onAnswer);
 };
 
 export async function getServerSideProps(context: NextPageContext) {
