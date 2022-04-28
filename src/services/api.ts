@@ -1,59 +1,78 @@
-import axios from 'axios';
+import { FilterQuiz } from './db';
+import axios, { Method } from 'axios';
+
+type RequestType = {
+  method: Method,
+  url: string
+  options: {
+    params?: any,
+    body?: any
+    headers?: any
+  }
+}
+
+const doRequest = ({ method, url, options }: RequestType) => {
+  try {
+    return axios.request({
+      method,
+      url,
+      data: /p(?:ost|ut|atch)/i.test(method) ? options.body : undefined,
+      params: options.params,
+      headers: options.headers
+    })
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getAllQuizzesApi = async (filter: FilterQuiz) => {
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  return doRequest({ method: 'GET', url: 'api/quiz', options: { headers, params: filter }})
+}
 
 export const addQuizApi = async (auth, values) => {
-  try {
-    const header = {
-      'Content-Type': 'application/json',
-      token: auth.token,
-    };
-    const resp = await axios.post('/api/quiz', values, { headers: header });
-    return resp;
-  } catch (error) {
-    throw error;
-  }
+  const headers = {
+    'Content-Type': 'application/json',
+    token: auth.token,
+  };
+  return doRequest({ method: 'POST', url: 'api/quiz', options: { headers, body: values }})
 };
 
 export const addAnswerApi = async (auth, quizId, values) => {
-  try {
-    const header = {
-      'Content-Type': 'application/json',
-      token: auth.token,
-    };
-    const resp = await axios.post(
-      `/api/quiz/${quizId}/answer`,
-      {
+  const headers = {
+    'Content-Type': 'application/json',
+    token: auth.token,
+  };
+  return doRequest({
+    method: 'POST',
+    url: `api/quiz/${quizId}/answer`,
+    options: {
+      headers,
+      body: {
         questions: values,
         createdAt: new Date(),
         updatedAt: new Date(),
-      },
-      { headers: header }
-    );
-    return resp;
-  } catch (error) {
-    throw error;
-  }
+      }
+    }
+  });
 };
 
 export const getAllDisciplinesApi = async () => {
-  try {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const resp = await axios.get('/api/disciplines', { headers });
-    return resp;
-  } catch (error) {
-    throw error;
-  }
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  return doRequest({ method: 'GET', url: 'api/disciplines', options: { headers }});
 };
 
 export const getAllSubjectsByDisciplineApi = async (disciplineId: string) => {
-  try {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const resp = await axios.get(`/api/disciplines/${disciplineId}/subjects`, { headers });
-    return resp;
-  } catch (error) {
-    throw error;
-  }
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  return doRequest({
+    method: 'GET',
+    url: `api/disciplines/${disciplineId}/subjects`,
+    options: { headers }
+  });
 };

@@ -1,5 +1,10 @@
 import firebase from '../lib/firebase';
 
+export type FilterQuiz = {
+  disciplineName?: string
+  subjectName?: string
+}
+
 export const addUser = async (authUser: any) => {
   const resp = await firebase
     .firestore()
@@ -14,8 +19,15 @@ export const addQuiz = async (quizData) => {
   return response;
 };
 
-export const getAllQuiz = async () => {
-  const snapshot = await firebase.firestore().collection('quiz').get();
+export const getAllQuiz = async (filter: FilterQuiz) => {
+  const quizRef = firebase.firestore().collection('quiz')
+  if (filter.disciplineName) {
+    quizRef.where('discipline', '==', filter.disciplineName)
+  }
+  if (filter.subjectName) {
+    quizRef.where('subject', '==', filter.subjectName)
+  }
+  const snapshot = await quizRef.get();
   const quiz = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return quiz;
 };
