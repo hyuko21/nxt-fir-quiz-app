@@ -1,12 +1,16 @@
-import { Box, Container, Divider, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Container, Divider, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React from 'react';
-import { getAllQuiz, getAllUsers } from '../services/db';
+import React, { useEffect } from 'react';
+import { useApp } from '../lib/app';
 
-const Home = (props) => {
-  const quiz = JSON.parse(props.quiz);
+const Home = () => {
+  const { quizzes, getQuizzes } = useApp();
   const router = useRouter();
+
+  useEffect(() => {
+    getQuizzes({})
+  }, [])
 
   const generateQuizCard = (singleQuiz) => {
     return (
@@ -28,6 +32,8 @@ const Home = (props) => {
     );
   };
 
+  const { list } = quizzes;
+
   return (
     <Box>
       <Head>
@@ -37,9 +43,9 @@ const Home = (props) => {
       <main>
         <header>
           <Container maxW="6xl">
-            {quiz.length > 0 && (
+            {list.length > 0 && (
               <SimpleGrid minChildWidth="400px">
-                {quiz.map((singleQuiz) => (
+                {list.map((singleQuiz) => (
                   <Box
                     key={singleQuiz.id}
                     onClick={() => router.push(`/quiz/${singleQuiz.id}`)}
@@ -59,14 +65,5 @@ const Home = (props) => {
     </Box>
   );
 };
-
-export async function getServerSideProps(_context) {
-  const quiz = await getAllQuiz();
-  const users = await getAllUsers();
-  const data = quiz.map((singleQuiz: any) => {
-    return { ...singleQuiz, user: users.find((user) => user.id === singleQuiz.userId)};
-  });
-  return { props: { quiz: JSON.stringify(data) } };
-}
 
 export default Home;

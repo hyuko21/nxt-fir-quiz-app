@@ -1,5 +1,31 @@
 import { Context, createContext, useContext, useState } from 'react'
-import { getAllDisciplinesApi, getAllSubjectsByDisciplineApi } from '../services/api'
+import { getAllDisciplinesApi, getAllQuizzesApi, getAllSubjectsByDisciplineApi } from '../services/api'
+import { FilterQuiz } from '../services/db';
+
+interface Quiz {
+  id: string
+  discipline: string
+  subject: string
+  title: string
+  description?: string
+  questions: [
+    {
+      type: string
+      title: string
+      options: [
+        {
+          optionId: string
+          title: string
+        }
+      ]
+      answer: string
+      answerReason: string
+    }
+  ]
+  user: any
+  createdAt: string
+  updatedAt: string
+}
 
 interface Discipline {
   id: string;
@@ -17,13 +43,19 @@ interface IAppResource<T> {
 }
 
 interface IAppContext {
+  quizzes: IAppResource<Quiz>
   disciplines: IAppResource<Discipline>
   subjects: IAppResource<Subject>
+  getQuizzes: (filter: FilterQuiz) => Promise<void>
   getDisciplines: () => Promise<void>
   getSubjectsByDiscipline: (disciplineId: string) => Promise<void>
 }
 
 const AppContext: Context<IAppContext> = createContext<IAppContext>({
+  quizzes: {
+    list: [],
+    loading: false
+  },
   disciplines: {
     list: [],
     loading: false
@@ -32,13 +64,27 @@ const AppContext: Context<IAppContext> = createContext<IAppContext>({
     list: [],
     loading: false
   },
+  getQuizzes: async () => {},
   getDisciplines: async () => {},
   getSubjectsByDiscipline: async () => {}
 });
 
 function useProvideApp() {
+  const [quizzes, setQuizzes] = useState<IAppResource<Quiz>>({ list: [], loading: false });
   const [disciplines, setDisciplines] = useState<IAppResource<Discipline>>({ list: [], loading: false });
   const [subjects, setSubjects] = useState<IAppResource<Subject>>({ list: [], loading: false });
+
+  const getQuizzes = async (filter: FilterQuiz) => {
+    setQuizzes(prev => ({ ...prev, loading: true }))
+    let result: Quiz[];
+    try {
+      const { data } = await getAllQuizzesApi(filter)
+      result = data.result
+    } catch {
+    } finally {
+      setQuizzes(prev => ({ ...prev, list: result, loading: false }))
+    }
+  }
 
   const getSubjectsByDiscipline = async (disciplineId: string) => {
     setSubjects(prev => ({ ...prev, loading: true }))
@@ -65,8 +111,10 @@ function useProvideApp() {
   }
 
   return {
+    quizzes,
     disciplines,
     subjects,
+    getQuizzes,
     getDisciplines,
     getSubjectsByDiscipline
   }
@@ -78,3 +126,4 @@ export function AppProvider({ children }: any) {
 }
 
 export const useApp = () => useContext(AppContext);
+
