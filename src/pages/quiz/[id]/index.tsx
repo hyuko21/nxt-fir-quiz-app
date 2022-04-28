@@ -23,6 +23,26 @@ import { getSingleQuiz } from '../../../services/db';
 import { addAnswerApi } from '../../../services/api';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 
+const ShowAnswer = (answer) => {
+  if (!answer) return
+  let Answer: () => React.ReactElement;
+  if (answer.isCorrect) {
+    Answer = () => (
+      <Heading size='md' color='green.500'>Correct answer</Heading>
+    )
+  } else {
+    Answer = () => (
+      <>
+        <Heading size='md' color='red.500'>Wrong answer</Heading>
+        {answer.reason && <Text fontSize='lg'><b>Reason:</b> {answer.reason}</Text>}
+      </>
+    )
+  }
+  return (
+    <Stack mt={8} spacing={2}><Answer /></Stack>
+  )
+}
+
 const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
   return (
     <Container
@@ -100,12 +120,7 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
                         >
                           Submit Answer
                         </Button>
-                        {answered[singleQuiz.questionId] && !answered[singleQuiz.questionId].isCorrect && (
-                          <Stack mt={8} spacing={2}>
-                            <Heading size='md' color='red.500'>Wrong answer</Heading>
-                            {answered[singleQuiz.questionId].reason && <Text fontSize='lg'><b>Reason:</b> {answered[singleQuiz.questionId].reason}</Text>}
-                          </Stack>
-                        )}
+                        {ShowAnswer(answered[singleQuiz.questionId])}
                       </FormControl>
                     )}
                   </Field>
