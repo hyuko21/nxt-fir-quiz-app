@@ -29,7 +29,7 @@ export const getAllQuizzesApi = async (filter: FilterQuiz) => {
   const headers = {
     'Content-Type': 'application/json'
   };
-  return doRequest({ method: 'GET', url: 'api/quiz', options: { headers, params: filter }})
+  return doRequest({ method: 'GET', url: '/api/quiz', options: { headers, params: filter }})
 }
 
 export const addQuizApi = async (auth, values) => {
@@ -37,7 +37,7 @@ export const addQuizApi = async (auth, values) => {
     'Content-Type': 'application/json',
     token: auth.token,
   };
-  return doRequest({ method: 'POST', url: 'api/quiz', options: { headers, body: values }})
+  return doRequest({ method: 'POST', url: '/api/quiz', options: { headers, body: values }})
 };
 
 export const addAnswerApi = async (auth, quizId, values) => {
@@ -47,7 +47,7 @@ export const addAnswerApi = async (auth, quizId, values) => {
   };
   return doRequest({
     method: 'POST',
-    url: `api/quiz/${quizId}/answer`,
+    url: `/api/quiz/${quizId}/answer`,
     options: {
       headers,
       body: {
@@ -63,7 +63,7 @@ export const getAllDisciplinesApi = async () => {
   const headers = {
     'Content-Type': 'application/json',
   };
-  return doRequest({ method: 'GET', url: 'api/disciplines', options: { headers }});
+  return doRequest({ method: 'GET', url: '/api/disciplines', options: { headers }});
 };
 
 export const getAllSubjectsByDisciplineApi = async (disciplineId: string) => {
@@ -72,7 +72,7 @@ export const getAllSubjectsByDisciplineApi = async (disciplineId: string) => {
   };
   return doRequest({
     method: 'GET',
-    url: `api/disciplines/${disciplineId}/subjects`,
+    url: `/api/disciplines/${disciplineId}/subjects`,
     options: { headers }
   });
 };

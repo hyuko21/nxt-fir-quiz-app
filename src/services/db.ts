@@ -21,14 +21,15 @@ export const addQuiz = async (quizData) => {
 
 export const getAllQuiz = async (filter: FilterQuiz) => {
   const quizRef = firebase.firestore().collection('quiz')
+  let quizQuery: any
   if (filter.disciplineName) {
-    quizRef.where('discipline', '==', filter.disciplineName)
+    quizQuery = quizRef.where('discipline', '==', filter.disciplineName)
   }
   if (filter.subjectName) {
-    quizRef.where('subject', '==', filter.subjectName)
+    quizQuery.where('subject', '==', filter.subjectName)
   }
-  const snapshot = await quizRef.get();
-  const quiz = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const snapshot = await (quizQuery || quizRef).get();
+  const quiz = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
   return quiz;
 };
 
