@@ -8,48 +8,40 @@ const Navbar: React.FC<{}> = () => {
   const router = useRouter();
 
   return (
-    <>
-      <Flex justify="space-between" m={4}>
+    <Box>
+      <Flex justify="space-between" m={4} alignItems={'flex-start'}>
         <Heading onClick={() => router.push('/')} as="button">
           QuizApp
         </Heading>
-        <Box>
+        <Box p={2}>
+          <Link
+            p={2}
+            fontWeight={
+              router.pathname === '/quiz/new' ? 'extrabold' : 'normal'
+            }
+            onClick={() => router.push('/quiz/new')}
+          >
+            Add new quiz
+          </Link>
           {auth ? (
-            <Box p={2}>
-              <Link
-                p={2}
-                fontWeight={
-                  router.pathname === '/quiz/new' ? 'extrabold' : 'normal'
-                }
-                onClick={() => router.push('/quiz/new')}
-              >
-                Add new quiz
-              </Link>
-              <Link p={2} onClick={() => signOut()}>
-                Logout
-              </Link>
-            </Box>
+            <Link p={2} onClick={() => signOut()}>
+              Logout
+            </Link>
           ) : (
-            <Box p={2}>
-              <Link
-                p={2}
-                onClick={() => router.push('/signin')}
-                fontWeight={
-                  router.pathname === '/signin' ? 'extrabold' : 'normal'
-                }
-              >
-                Sign In
-              </Link>
-            </Box>
+            <Link
+              p={2}
+              onClick={() => router.push('/signin')}
+              fontWeight={
+                router.pathname === '/signin' ? 'extrabold' : 'normal'
+              }
+            >
+              Sign In
+            </Link>
           )}
         </Box>
       </Flex>
-      <Divider
-        css={{
-          boxShadow: '1px 1px #888888',
-        }}
-      />
-    </>
+      <Divider css={{ boxShadow: '1px 1px #888' }} />
+    </Box>
   );
 };
 

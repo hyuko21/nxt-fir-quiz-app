@@ -2,15 +2,16 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { AppProps } from 'next/app';
 import { AppProvider } from '../lib/app';
 import { AuthProvider } from '../lib/auth';
-import Navbar from '../common/Navbar';
+import { Layout } from '../common/Layout';
 
 function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
       <AuthProvider>
         <AppProvider>
-          <Navbar />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </AppProvider>
       </AuthProvider>
     </ChakraProvider>

@@ -1,6 +1,5 @@
 import { Box, Button, Container, Divider, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FieldAutoComplete } from '../common/FieldAutoComplete';
@@ -46,7 +45,7 @@ const ShowFilter = () => {
       borderWidth="1px"
       borderRadius="lg"
       p={6}
-      boxShadow="xl"
+      boxShadow="md"
     >
       <Formik
         initialValues={initialValues}
@@ -121,7 +120,7 @@ const Home = () => {
 
   const generateQuizCard = ({ title, discipline, subject, user, questions, description }: any) => {
     return (
-      <Box m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl">
+      <Box m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="md">
         <Heading as="h3" size="lg">
           {title}
         </Heading>
@@ -149,32 +148,24 @@ const Home = () => {
   const { list } = quizzes;
 
   return (
-    <Box>
-      <Head>
-        <title>QuizApp</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <Container maxW="6xl">
-          <ShowFilter />
-          {list.length > 0 && (
-            <SimpleGrid minChildWidth="400px">
-              {list.map((singleQuiz) => (
-                <Box
-                  key={singleQuiz.id}
-                  onClick={() => router.push(`/quiz/${singleQuiz.id}`)}
-                  as="button"
-                  textAlign="start"
-                  m={2}
-                >
-                  {generateQuizCard(singleQuiz)}
-                </Box>
-              ))}
-            </SimpleGrid>
-          )}
-        </Container>
-      </main>
-    </Box>
+    <Container maxW="6xl">
+      <ShowFilter />
+      {list.length > 0 && (
+        <SimpleGrid minChildWidth="400px">
+          {list.map((singleQuiz) => (
+            <Box
+              key={singleQuiz.id}
+              onClick={() => router.push(`/quiz/${singleQuiz.id}`)}
+              as="button"
+              textAlign="start"
+              m={2}
+            >
+              {generateQuizCard(singleQuiz)}
+            </Box>
+          ))}
+        </SimpleGrid>
+      )}
+    </Container>
   );
 };
 

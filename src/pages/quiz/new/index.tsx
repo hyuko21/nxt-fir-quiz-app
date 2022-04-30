@@ -127,7 +127,7 @@ const Index = () => {
       borderWidth="1px"
       borderRadius="lg"
       p={6}
-      boxShadow="xl"
+      boxShadow="md"
     >
       <Formik
         initialValues={initialValues}

@@ -38,7 +38,7 @@ const answer = (props) => {
             borderWidth="1px"
             borderRadius="lg"
             p={6}
-            boxShadow="xl"
+            boxShadow="md"
             backgroundColor={
               answer.questions[singleQuiz.questionId] &&
               singleQuiz.options[singleQuiz.answer].optionId ===
