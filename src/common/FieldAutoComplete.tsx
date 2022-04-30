@@ -1,8 +1,8 @@
-import { FormControl, Input } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, Input } from "@chakra-ui/react";
 import { CUIAutoComplete } from "chakra-ui-autocomplete";
 import { useField } from "formik";
 
-type AutoCompleteInputProps = {
+type FieldAutoCompleteProps = {
   id: string
   label?: string
   placeholder?: string
@@ -10,20 +10,24 @@ type AutoCompleteInputProps = {
   items: any[],
   onSelect: (item: any) => void
   isDisabled?: boolean
+  shouldValidate?: boolean
 }
 
-export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
+export const FieldAutoComplete: React.FC<FieldAutoCompleteProps> = ({
   id,
   label,
   placeholder,
   name,
   items,
   onSelect,
-  isDisabled
+  isDisabled,
+  shouldValidate
 }) => {
-  const [field,,{ setValue }] = useField({ id, name, placeholder })
+  shouldValidate ??= false
+  const [field, meta, { setValue }] = useField({ id, name, placeholder })
   return (
     <FormControl
+      isInvalid={shouldValidate && meta.error && meta.touched}
       isDisabled={isDisabled}
     >
       <CUIAutoComplete
@@ -52,6 +56,7 @@ export const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
           }
         }}
       />
+      {shouldValidate && <FormErrorMessage mt={-4} mb={4}>{meta.error}</FormErrorMessage>}
     </FormControl>
   )
 }

@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { AutoCompleteInput } from '../common/AutoCompleteInput';
+import { FieldAutoComplete } from '../common/FieldAutoComplete';
 import { useApp } from '../lib/app';
 import { FilterQuiz } from '../services/db';
 
@@ -54,7 +54,7 @@ const ShowFilter = () => {
       >
         {({ setFieldValue, values, resetForm }) => (
           <Form>
-            <AutoCompleteInput
+            <FieldAutoComplete
               id='discipline'
               name='discipline'
               label='Quiz Discipline'
@@ -66,13 +66,13 @@ const ShowFilter = () => {
                 item && getSubjectsByDiscipline(item.value)
               }}
             />
-            <AutoCompleteInput
+            <FieldAutoComplete
               id='subject'
               name='subject'
               label='Quiz Subject'
               placeholder='Filter by Subject'
               items={selectableSubjects}
-              isDisabled={!values.discipline}
+              isDisabled={false}
               onSelect={(item) => {
                 setFieldValue('subject', item?.label)
               }}

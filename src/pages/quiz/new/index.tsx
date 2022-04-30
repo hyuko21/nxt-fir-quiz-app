@@ -18,12 +18,12 @@ import {
   Radio,
   Select,
 } from '@chakra-ui/react';
-import { CUIAutoComplete } from 'chakra-ui-autocomplete';
 import { Field, FieldArray, Form, Formik, getIn } from 'formik';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
+import { FieldAutoComplete } from '../../../common/FieldAutoComplete';
 import { useApp } from '../../../lib/app';
 import { useAuth } from '../../../lib/auth';
 import { addQuizApi } from '../../../services/api';
@@ -136,83 +136,31 @@ const Index = () => {
       >
         {(props) => (
           <Form>
-            <Field name="discipline">
-              {({ field, form }) => {
-                return (
-                  <FormControl
-                    isInvalid={form.errors.discipline && form.touched.discipline}
-                  >
-                    <FormLabel htmlFor="discipline" fontSize="xl" mb={-4}>
-                      Quiz Discipline
-                    </FormLabel>
-                    <CUIAutoComplete
-                      items={selectableDisciplines}
-                      label=''
-                      placeholder=''
-                      hideToggleButton
-                      renderCustomInput={(inputProps) => (
-                        <Input
-                          {...inputProps}
-                          {...field}
-                          onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
-                          onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
-                          id='discipline'
-                        />
-                      )}
-                      selectedItems={[]}
-                      listStyleProps={{position: 'absolute', zIndex: '9999'}}
-                      disableCreateItem
-                      onSelectedItemsChange={(changes) => {
-                        const nextSelected = changes.selectedItems[0]
-                        if (nextSelected?.label !== field.value) {
-                          form.setFieldValue('discipline', nextSelected?.label)
-                          form.setFieldValue('subject', '')
-                          nextSelected && getSubjectsByDiscipline(nextSelected.value)
-                        }
-                      }}
-                    />
-                    <FormErrorMessage mt={-4}>{form.errors.discipline}</FormErrorMessage>
-                  </FormControl>
-                )
+            <FieldAutoComplete
+              id='discipline'
+              name='discipline'
+              label='Quiz Discipline'
+              placeholder='Please select a Discipline'
+              items={selectableDisciplines}
+              onSelect={(item) => {
+                props.setFieldValue('discipline', item?.label)
+                props.setFieldValue('subject', '')
+                item && getSubjectsByDiscipline(item.value)
               }}
-            </Field>
-            <Field name="subject">
-              {({ field, form }) => {
-                return (
-                  <FormControl
-                    isInvalid={form.errors.subject && form.touched.subject}
-                    isDisabled={!form.values.discipline}
-                  >
-                    <FormLabel htmlFor="subject" fontSize="xl" mt={4} mb={-4}>
-                      Quiz Subject
-                    </FormLabel>
-                    <CUIAutoComplete
-                      items={selectableSubjects}
-                      label=''
-                      placeholder=''
-                      hideToggleButton
-                      renderCustomInput={(inputProps) => (
-                        <Input
-                          {...inputProps}
-                          {...field}
-                          onChange={(e) => { inputProps.onChange(e); field.onChange(e) }}
-                          onBlur={(e) => { inputProps.onBlur(e); field.onBlur(e) }}
-                          id='subject'
-                        />
-                      )}
-                      selectedItems={[]}
-                      listStyleProps={{position: 'absolute', zIndex: '9999'}}
-                      disableCreateItem
-                      onSelectedItemsChange={(changes) => {
-                        const nextSelected = changes.selectedItems[0]
-                        form.setFieldValue('subject', nextSelected?.label)
-                      }}
-                    />
-                    <FormErrorMessage mt={-4}>{form.errors.subject}</FormErrorMessage>
-                  </FormControl>
-                )
+              shouldValidate
+            />
+            <FieldAutoComplete
+              id='subject'
+              name='subject'
+              label='Quiz Subject'
+              placeholder='Please select a Subject'
+              items={selectableSubjects}
+              onSelect={(item) => {
+                props.setFieldValue('subject', item?.label)
               }}
-            </Field>
+              isDisabled={!props.values.discipline}
+              shouldValidate
+            />
             <Field name="title">
               {({ field, form }) => (
                 <FormControl
