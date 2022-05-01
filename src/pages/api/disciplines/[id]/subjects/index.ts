@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 const getAllSubjectsByDiscipline = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const disciplineId = req.query.id as string;
+    const disciplineId = String(req.query.id);
     const subjects = await getAllSubjectsByDisciplineDb(disciplineId);
     return res
       .status(200)

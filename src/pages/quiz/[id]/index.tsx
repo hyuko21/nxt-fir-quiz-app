@@ -189,7 +189,7 @@ const SingleQuiz = (props) => {
 
 export default SingleQuiz;
 
-export async function getServerSideProps(context: NextPageContext) {
+export async function getServerSideProps(context: NextPageContext & { locale: string }) {
   const quizId = context.query.id;
   const quizData = await getSingleQuiz(quizId);
   return {

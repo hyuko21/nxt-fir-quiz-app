@@ -201,6 +201,7 @@ const Index = () => {
                     {t('questionData', { ns: 'quiz' })}
                   </FormLabel>
                   <Box ml={4}>
+                    {/* @ts-ignore */}
                     <FieldArray {...field} name="questions" id="questions">
                       {(fieldArrayProps) => {
                         const { push, remove, form } = fieldArrayProps;

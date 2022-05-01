@@ -11,6 +11,7 @@ function App({ Component, pageProps }: AppProps) {
       <AuthProvider>
         <AppProvider>
           <Layout>
+            {/* @ts-ignore */}
             <Component {...pageProps} />
           </Layout>
         </AppProvider>
