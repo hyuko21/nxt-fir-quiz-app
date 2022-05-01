@@ -1,0 +1,10 @@
+{
+  "quiz": "Resumo",
+  "discipline": "Disciplina",
+  "subject": "Assunto",
+
+  "filterDiscipline": "Filtrar por Disciplina",
+  "filterSubject": "Filtrar por Assunto",
+  "cleanFilter": "Limpar busca",
+  "searchQuiz": "Procurar $t(quiz)"
+}

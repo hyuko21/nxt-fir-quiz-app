@@ -1,3 +1,5 @@
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { Box, Button, Container, Divider, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import { useRouter } from 'next/router';
@@ -7,6 +9,7 @@ import { useApp } from '../lib/app';
 import { FilterQuiz } from '../services/db';
 
 const ShowFilter = () => {
+  const { t } = useTranslation(['common', 'home'])
   const [selectableDisciplines, setSelectableDisciplines] = useState([])
   const [selectableSubjects, setSelectableSubjects] = useState([])
   const [filter, setFilter] = useState<FilterQuiz>(null)
@@ -56,8 +59,8 @@ const ShowFilter = () => {
             <FieldAutoComplete
               id='discipline'
               name='discipline'
-              label='Quiz Discipline'
-              placeholder='Filter by Discipline'
+              label={t('discipline', { ns: 'home' })}
+              placeholder={t('filterDiscipline', { ns: 'home' })}
               items={selectableDisciplines}
               onSelect={(item) => {
                 setFieldValue('discipline', item?.label)
@@ -68,8 +71,8 @@ const ShowFilter = () => {
             <FieldAutoComplete
               id='subject'
               name='subject'
-              label='Quiz Subject'
-              placeholder='Filter by Subject'
+              label={t('subject', { ns: 'home' })}
+              placeholder={t('filterSubject', { ns: 'home' })}
               items={selectableSubjects}
               isDisabled={false}
               onSelect={(item) => {
@@ -86,7 +89,7 @@ const ShowFilter = () => {
                     resetForm()
                   }}
                 >
-                  Reset Filter
+                  {t('cleanFilter', { ns: 'home' })}
                 </Button>
               )}
               <Button
@@ -100,7 +103,7 @@ const ShowFilter = () => {
                   })
                 }}
               >
-                Search Quiz
+                {t('searchQuiz', { ns: 'home' })}
               </Button>
             </Flex>
           </Form>
@@ -111,6 +114,7 @@ const ShowFilter = () => {
 }
 
 const Home = () => {
+  const { t } = useTranslation('home')
   const { quizzes, getQuizzes } = useApp();
   const router = useRouter();
 
@@ -129,10 +133,10 @@ const Home = () => {
           {discipline}, {subject}
         </Text>
         <Text color="gray.500" mt={2}>
-          Posted By: {user?.name}
+          {t('postedBy')} {user?.name}
         </Text>
         <Text color="gray.500" mt={2}>
-          No of Questions: {questions.length}
+          {t('questionQty')}: {questions.length}
         </Text>
    
         {description && (
@@ -170,3 +174,11 @@ const Home = () => {
 };
 
 export default Home;
+
+export async function getStaticProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common', 'home', 'footer'])),
+    },
+  };
+}

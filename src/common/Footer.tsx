@@ -1,13 +1,16 @@
+import { useTranslation } from 'next-i18next'
 import { Container, HStack, Text, Link, Stack } from '@chakra-ui/react'
 import { FaHeart } from 'react-icons/fa';
 
 export const Footer = () => {
+  const { t } = useTranslation(['common', 'footer'])
+
   const Credits = () => (
     <HStack>
-      <Text>&copy; QuizApp.</Text>
-      <Text>Made with</Text>
+      <Text>&copy; {t('appName')}.</Text>
+      <Text>{t('madeWith', { ns: 'footer' })}</Text>
       <FaHeart />
-      <Text>by <Link href={'https://github.com/hyuko21'} target='_blank'>hyuko21</Link></Text>
+      <Text>{t('by', { ns: 'footer' })} <Link href={'https://github.com/hyuko21'} target='_blank'>hyuko21</Link></Text>
     </HStack>
   )
 
