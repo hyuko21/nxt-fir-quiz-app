@@ -1,3 +1,5 @@
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -30,6 +32,7 @@ import { addQuizApi } from '../../../services/api';
 import { getOptionsForQuestionType, QuestionType, questionTypes } from '../../../utils/quiz';
 
 const Index = () => {
+  const { t } = useTranslation(['common', 'footer', 'validation', 'quiz'])
   const { auth, loading } = useAuth();
   const { disciplines, subjects, getDisciplines, getSubjectsByDiscipline } = useApp();
   const [selectableDisciplines, setSelectableDisciplines] = useState([])
@@ -73,25 +76,25 @@ const Index = () => {
   };
 
   const validationSchema = yup.object().shape({
-    discipline: yup.string().required('Required'),
-    subject: yup.string().required('Required'),
-    title: yup.string().required('Required'),
+    discipline: yup.string().required(t('required', { ns: 'validation' })),
+    subject: yup.string().required(t('required', { ns: 'validation' })),
+    title: yup.string().required(t('required', { ns: 'validation' })),
     description: yup.string(),
     questions: yup
       .array()
       .of(
         yup.object().shape({
-          title: yup.string().required('Required'),
-          type: yup.string().oneOf(Object.values(QuestionType)).required('Required'),
+          title: yup.string().required(t('required', { ns: 'validation' })),
+          type: yup.string().oneOf(Object.values(QuestionType)).required(t('required', { ns: 'validation' })),
           options: yup.array().of(
             yup.object().shape({
-              title: yup.string().required('Required'),
+              title: yup.string().required(t('required', { ns: 'validation' })),
             })
           ),
-          answer: yup.string().required('Required')
+          answer: yup.string().required(t('required', { ns: 'validation' }))
         })
       )
-      .required('Must add a question'),
+      .required(t('mustAddQuestion', { ns: 'validation' })),
   });
 
   const submitHandler = async (values, actions) => {
@@ -139,8 +142,8 @@ const Index = () => {
             <FieldAutoComplete
               id='discipline'
               name='discipline'
-              label='Quiz Discipline'
-              placeholder='Please select a Discipline'
+              label={t('discipline')}
+              placeholder={t('selectDiscipline', { ns: 'quiz' })}
               items={selectableDisciplines}
               onSelect={(item) => {
                 props.setFieldValue('discipline', item?.label)
@@ -152,8 +155,8 @@ const Index = () => {
             <FieldAutoComplete
               id='subject'
               name='subject'
-              label='Quiz Subject'
-              placeholder='Please select a Subject'
+              label={t('subject')}
+              placeholder={t('selectSubject', { ns: 'quiz' })}
               items={selectableSubjects}
               onSelect={(item) => {
                 props.setFieldValue('subject', item?.label)
@@ -167,7 +170,7 @@ const Index = () => {
                   isInvalid={form.errors.title && form.touched.title}
                 >
                   <FormLabel htmlFor="title" fontSize="xl" mt={4}>
-                    Quiz Title
+                    {t('title', { ns: 'quiz' })}
                   </FormLabel>
                   <Input {...field} id="title" />
                   <FormErrorMessage>{form.errors.title}</FormErrorMessage>
@@ -182,7 +185,7 @@ const Index = () => {
                   }
                 >
                   <FormLabel htmlFor="description" fontSize="xl" mt={4}>
-                    Quiz description
+                    {t('description', { ns: 'quiz' })}
                   </FormLabel>
                   <Textarea {...field} id="description" />
                   <FormErrorMessage>
@@ -195,7 +198,7 @@ const Index = () => {
               {({ field }) => (
                 <FormControl>
                   <FormLabel htmlFor="questions" fontSize="xl" mt={4}>
-                    Enter your question data:
+                    {t('questionData', { ns: 'quiz' })}
                   </FormLabel>
                   <Box ml={4}>
                     <FieldArray {...field} name="questions" id="questions">
@@ -221,7 +224,7 @@ const Index = () => {
                                     <FormLabel
                                       htmlFor={`questions[${index}][title]`}
                                     >
-                                      Question Title:
+                                      {t('questionTitle', { ns: 'quiz' })}
                                     </FormLabel>
                                     <Input
                                       name={`questions[${index}][title]`}
@@ -248,7 +251,7 @@ const Index = () => {
                                         <FormLabel
                                           htmlFor={`questions[${index}][type]`}
                                         >
-                                          Question Type:
+                                          {t('questionType', { ns: 'quiz' })}
                                         </FormLabel>
                                         <RadioGroup
                                           defaultValue={_question.type}
@@ -269,7 +272,7 @@ const Index = () => {
                                               value={questionType.code}
                                               key={key}
                                             >
-                                              {questionType.label}
+                                              {t(`${questionType.code}Type`, { ns: 'quiz' })}
                                             </Radio>
                                           ))}
                                           </Stack>
@@ -299,7 +302,7 @@ const Index = () => {
                                           <FormLabel
                                             htmlFor={`questions[${index}][options][${subIndex}].title`}
                                           >
-                                            {option.label}
+                                            {t('optionLabel', { ns: 'quiz', val: option.code })}:
                                           </FormLabel>
                                           <Input
                                             name={`questions[${index}][options][${subIndex}].title`}
@@ -320,11 +323,12 @@ const Index = () => {
                                         isInvalid={errorHandler(
                                           `questions[${index}][answer]`
                                         )}
+                                        mb={{ base: 4 }}
                                       >
                                         <FormLabel
                                           htmlFor={`questions[${index}][answer]`}
                                         >
-                                          Correct Answer:
+                                          {t('answerLabel', { ns: 'quiz' })}
                                         </FormLabel>
                                         <Select
                                           {...questionAnswerField}
@@ -339,7 +343,7 @@ const Index = () => {
                                               value={option.answer}
                                               key={key}
                                             >
-                                              {option.code}
+                                              {t('optionLabel', { ns: 'quiz', val: `[${t(option.code, { ns: 'quiz' })}]` })}
                                             </option>
                                           ))}
                                         </Select>
@@ -355,7 +359,7 @@ const Index = () => {
                                     {({ field: questionAnswerReasonField }) => (
                                       <FormControl>
                                         <FormLabel htmlFor={`questions[${index}][answerReason]`}>
-                                          Answer Reason:
+                                          {t('answerReason', { ns: 'quiz' })}
                                         </FormLabel>
                                         <Textarea {...questionAnswerReasonField} id={`questions[${index}][answerReason]`} />
                                       </FormControl>
@@ -409,12 +413,12 @@ const Index = () => {
             </Field>
             <Center>
               <Button
-                colorScheme="green"
+                colorScheme="whatsapp"
                 isLoading={props.isSubmitting}
                 type="submit"
                 disabled={!(props.isValid && props.dirty)}
               >
-                Submit Quiz
+                {t('submitQuiz', { ns: 'quiz' })}
               </Button>
             </Center>
           </Form>
@@ -425,3 +429,11 @@ const Index = () => {
 };
 
 export default Index;
+
+export async function getStaticProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common', 'footer', 'validation', 'quiz'])),
+    },
+  };
+}

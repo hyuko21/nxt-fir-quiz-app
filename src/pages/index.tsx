@@ -59,7 +59,7 @@ const ShowFilter = () => {
             <FieldAutoComplete
               id='discipline'
               name='discipline'
-              label={t('discipline', { ns: 'home' })}
+              label={t('discipline')}
               placeholder={t('filterDiscipline', { ns: 'home' })}
               items={selectableDisciplines}
               onSelect={(item) => {
@@ -71,7 +71,7 @@ const ShowFilter = () => {
             <FieldAutoComplete
               id='subject'
               name='subject'
-              label={t('subject', { ns: 'home' })}
+              label={t('subject')}
               placeholder={t('filterSubject', { ns: 'home' })}
               items={selectableSubjects}
               isDisabled={false}

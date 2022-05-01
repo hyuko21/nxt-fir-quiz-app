@@ -3,5 +3,9 @@
 
   "addQuiz": "Add new quiz",
   "signIn": "Sing In",
-  "signOut": "Sign Out"
+  "signOut": "Sign Out",
+
+  "quiz": "Quiz",
+  "discipline": "Discipline",
+  "subject": "Subject"
 }

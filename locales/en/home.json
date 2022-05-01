@@ -1,8 +1,4 @@
 {
-  "quiz": "Quiz",
-  "discipline": "Discipline",
-  "subject": "Subject",
-
   "filterDiscipline": "Filter by Discipline",
   "filterSubject": "Filter by Subject",
   "cleanFilter": "Reset Filter",

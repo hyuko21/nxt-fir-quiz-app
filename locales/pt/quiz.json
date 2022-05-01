@@ -1,0 +1,20 @@
+{
+  "selectDiscipline": "Selecione uma $t(discipline, { \"ns\": \"common\" })",
+  "selectSubject": "Selecione um $t(subject, { \"ns\": \"common\" })",
+
+  "title": "Título",
+  "description": "Descrição",
+  
+  "questionData": "Dados de questões",
+  "questionTitle": "$t(title) da questão",
+  "questionType": "Tipo de questão",
+  "multichoiseType": "Múltipla Escolha",
+  "trueorfalseType": "Verdadeiro ou Falso",
+  "optionLabel": "Alternativa {{val}}",
+  "true": "Verdadeiro",
+  "false": "Falso",
+  "answerLabel": "Alternativa correta",
+  "answerReason": "Justificativa",
+  
+  "submitQuiz": "Salvar $t(quiz, { \"ns\": \"common\" })"
+}

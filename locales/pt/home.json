@@ -1,10 +1,9 @@
 {
-  "quiz": "Resumo",
-  "discipline": "Disciplina",
-  "subject": "Assunto",
-
-  "filterDiscipline": "Filtrar por Disciplina",
-  "filterSubject": "Filtrar por Assunto",
+  "filterDiscipline": "Filtrar por $t(discipline, { \"ns\": \"common\" })",
+  "filterSubject": "Filtrar por $t(subject, { \"ns\": \"common\" })",
   "cleanFilter": "Limpar busca",
-  "searchQuiz": "Procurar $t(quiz)"
+  "searchQuiz": "Procurar $t(quiz, { \"ns\": \"common\" })",
+
+  "postedBy": "Criado por",
+  "questionQty": "Nº de questões"
 }

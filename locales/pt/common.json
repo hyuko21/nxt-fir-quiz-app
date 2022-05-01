@@ -3,5 +3,9 @@
 
   "addQuiz": "Adicionar novo resumo",
   "signIn": "Entrar",
-  "signOut": "Sair"
+  "signOut": "Sair",
+
+  "quiz": "Resumo",
+  "discipline": "Disciplina",
+  "subject": "Assunto"
 }
