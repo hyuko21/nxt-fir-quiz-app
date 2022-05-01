@@ -11,6 +11,17 @@ type RequestType = {
   }
 }
 
+export const safeApiCall = async <T,>(apiFn: () => Promise<any>, defaultValue: T) => {
+  let result: T
+  try {
+    const { data } = await apiFn()
+    result = data.result
+  } catch {
+    result = defaultValue
+  }
+  return result
+}
+
 const doRequest = ({ method, url, options }: RequestType) => {
   try {
     return axios.request({

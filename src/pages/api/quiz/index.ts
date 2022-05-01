@@ -34,11 +34,13 @@ const addQuiz = async (req: NextApiRequest, res: NextApiResponse) => {
 const getAllQuiz = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const filter = {
-      disciplineName: req.query.disciplineName as string,
-      subjectName: req.query.subjectName as string
+      discipline: req.query.discipline as string,
+      subject: req.query.subject as string
     };
     const quizzes = await getAllQuizDb(filter);
-    const users = await getAllUsers();
+    const users = await getAllUsers({
+      ids: quizzes.map((quiz: any) => quiz.userId)
+    });
     const data = quizzes.map((quiz: any) => {
       return { ...quiz, user: users.find((user) => user.id === quiz.userId)};
     });

@@ -1,5 +1,10 @@
 import { Context, createContext, useContext, useState } from 'react'
-import { getAllDisciplinesApi, getAllQuizzesApi, getAllSubjectsByDisciplineApi } from '../services/api'
+import {
+  getAllDisciplinesApi,
+  getAllQuizzesApi,
+  getAllSubjectsByDisciplineApi,
+  safeApiCall
+} from '../services/api'
 import { FilterQuiz } from '../services/db';
 
 interface Quiz {
@@ -76,38 +81,20 @@ function useProvideApp() {
 
   const getQuizzes = async (filter: FilterQuiz) => {
     setQuizzes(prev => ({ ...prev, loading: true }))
-    let result: Quiz[];
-    try {
-      const { data } = await getAllQuizzesApi(filter)
-      result = data.result
-    } catch {
-    } finally {
-      setQuizzes(prev => ({ ...prev, list: result, loading: false }))
-    }
+    const result = await safeApiCall<Quiz[]>(() => getAllQuizzesApi(filter), [])
+    setQuizzes(prev => ({ ...prev, list: result, loading: false }))
   }
 
   const getSubjectsByDiscipline = async (disciplineId: string) => {
     setSubjects(prev => ({ ...prev, loading: true }))
-    let result: Subject[];
-    try {
-      const { data } = await getAllSubjectsByDisciplineApi(disciplineId)
-      result = data.result
-    } catch {
-    } finally {
-      setSubjects(prev => ({ ...prev, list: result, loading: false }))
-    }
+    const result = await safeApiCall<Subject[]>(() => getAllSubjectsByDisciplineApi(disciplineId), [])
+    setSubjects(prev => ({ ...prev, list: result, loading: false }))
   }
 
   const getDisciplines = async () => {
     setDisciplines(prev => ({ ...prev, loading: true }))
-    let result: Discipline[];
-    try {
-      const { data } = await getAllDisciplinesApi()
-      result = data.result
-    } catch {
-    } finally {
-      setDisciplines(prev => ({ ...prev, list: result, loading: false }))
-    }
+    const result = await safeApiCall<Discipline[]>(getAllDisciplinesApi, [])
+    setDisciplines(prev => ({ ...prev, list: result, loading: false }))
   }
 
   return {

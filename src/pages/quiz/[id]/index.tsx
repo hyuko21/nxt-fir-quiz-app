@@ -11,8 +11,7 @@ import {
   Text,
   Stack,
   Radio,
-  Box,
-  FormErrorMessage,
+  Box
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';

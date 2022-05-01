@@ -95,8 +95,8 @@ const ShowFilter = () => {
                 colorScheme="twitter"
                 onClick={() => {
                   setFilter({
-                    disciplineName: values.discipline,
-                    subjectName: values.subject
+                    discipline: values.discipline,
+                    subject: values.subject
                   })
                 }}
               >
