@@ -1,3 +1,5 @@
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import {
   Button,
   Center,
@@ -23,17 +25,19 @@ import { addAnswerApi } from '../../../services/api';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 
 const ShowAnswer = (answer) => {
+  const { t } = useTranslation('quiz')
+
   if (!answer) return
   let Answer: () => React.ReactElement;
   if (answer.isCorrect) {
     Answer = () => (
-      <Heading size='md' color='green.500'>Correct answer</Heading>
+      <Heading size='md' color='green.500'>{t('correctAnswer')}</Heading>
     )
   } else {
     Answer = () => (
       <>
-        <Heading size='md' color='red.500'>Wrong answer</Heading>
-        {answer.reason && <Text fontSize='lg'><b>Reason:</b> {answer.reason}</Text>}
+        <Heading size='md' color='red.500'>{t('wrongAnswer')}</Heading>
+        {answer.reason && <Text fontSize='lg'><b>{t('answerReason')}:</b> {answer.reason}</Text>}
       </>
     )
   }
@@ -43,6 +47,8 @@ const ShowAnswer = (answer) => {
 }
 
 const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
+  const { t } = useTranslation('quiz')
+
   return (
     <Container
       maxW="7xl"
@@ -117,7 +123,7 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
                           colorScheme="twitter"
                           onClick={() => onAnswer(singleQuiz, props.values[singleQuiz.questionId])}
                         >
-                          Submit Answer
+                          {t('submitAnswer')}
                         </Button>
                         {ShowAnswer(answered[singleQuiz.questionId])}
                       </FormControl>
@@ -181,10 +187,16 @@ const SingleQuiz = (props) => {
   return quiz && ShowQuiz(quiz, answered, onSubmit, onAnswer);
 };
 
+export default SingleQuiz;
+
 export async function getServerSideProps(context: NextPageContext) {
   const quizId = context.query.id;
   const quizData = await getSingleQuiz(quizId);
-  return { props: { quiz: quizData, quizId } };
+  return {
+    props: {
+      quiz: quizData,
+      quizId,
+      ...(await serverSideTranslations(context.locale, ['common', 'footer', 'quiz'])),
+    }
+  };
 }
-
-export default SingleQuiz;

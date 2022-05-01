@@ -16,5 +16,9 @@
   "answerLabel": "Alternativa correta",
   "answerReason": "Justificativa",
   
-  "submitQuiz": "Salvar $t(quiz, { \"ns\": \"common\" })"
+  "submitQuiz": "Salvar $t(quiz, { \"ns\": \"common\" })",
+
+  "correctAnswer": "Você acerto!",
+  "wrongAnswer": "Você errou",
+  "submitAnswer": "Responder"
 }
