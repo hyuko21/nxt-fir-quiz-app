@@ -4,6 +4,7 @@ import { FaHeart } from 'react-icons/fa';
 export const Footer = () => {
   const Credits = () => (
     <HStack>
+      <Text>&copy; QuizApp.</Text>
       <Text>Made with</Text>
       <FaHeart />
       <Text>by <Link href={'https://github.com/hyuko21'} target='_blank'>hyuko21</Link></Text>
@@ -12,8 +13,6 @@ export const Footer = () => {
 
   const AppInfo = () => (
     <HStack>
-      <Text>&copy; QuizApp. All rights reserved.</Text>
-      <Text>All rights reserved.</Text>
     </HStack>
   )
 
