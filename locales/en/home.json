@@ -1,6 +1,9 @@
 {
-  "filterDiscipline": "Filter by Discipline",
-  "filterSubject": "Filter by Subject",
+  "filterDiscipline": "Filter by $t(discipline, { \"ns\": \"common\" })",
+  "filterSubject": "Filter by $t(subject, { \"ns\": \"common\" })",
   "cleanFilter": "Reset Filter",
-  "searchQuiz": "Search $t(quiz)"
+  "searchQuiz": "Search $t(quiz, { \"ns\": \"common\" })",
+
+  "postedBy": "Posted By",
+  "questionQty": "No of questions"
 }

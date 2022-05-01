@@ -1,0 +1,24 @@
+{
+  "selectDiscipline": "Select a $t(discipline, { \"ns\": \"common\" })",
+  "selectSubject": "Select a $t(subject, { \"ns\": \"common\" })",
+
+  "title": "Title",
+  "description": "Description",
+  
+  "questionData": "Questions Data",
+  "questionTitle": "Question $t(title)",
+  "questionType": "Question Type",
+  "multichoiseType": "Multichoise",
+  "trueorfalseType": "True or False",
+  "optionLabel": "Option {{val}}",
+  "true": "True",
+  "false": "False",
+  "answerLabel": "Correct Answer",
+  "answerReason": "Answer Reason",
+  
+  "submitQuiz": "Submit $t(quiz, { \"ns\": \"common\" })",
+
+  "correctAnswer": "Correct Answer",
+  "wrongAnswer": "Wrong Answer",
+  "submitAnswer": "Submit Answer"
+}

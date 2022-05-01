@@ -1,0 +1,4 @@
+{
+  "required": "Required",
+  "mustAddQuestion": "$t(required) to add a question"
+}
