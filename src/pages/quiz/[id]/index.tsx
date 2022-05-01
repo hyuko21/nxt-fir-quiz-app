@@ -50,7 +50,7 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
       p={6}
     >
       <Box mb={10}>
-        <Flex alignItems='center' gap='8px'>
+        <Flex alignItems='center' gap='8px' mb={8}>
           <Heading size='sm'>{quiz.discipline}</Heading>
           <ChevronRightIcon fontSize={24}/>
           <Heading size='sm'>{quiz.subject}</Heading>

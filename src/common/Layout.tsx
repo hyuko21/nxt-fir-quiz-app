@@ -9,7 +9,7 @@ export const Layout = ({ children }) => (
       <title>QuizApp</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <Grid minH='100vh'>
+    <Grid minH='100vh' gridTemplateRows={'auto 2fr auto'}>
       <Navbar />
       <main>
         {children}

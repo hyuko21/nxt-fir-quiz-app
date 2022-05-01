@@ -20,7 +20,6 @@ export const Footer = () => {
     <Container
       alignSelf={'flex-end'}
       as="footer"
-      role="contentinfo"
       maxW='6xl'
       mt={{ base: '12', md: '16' }}
       py={{ base: '12', md: '16' }}

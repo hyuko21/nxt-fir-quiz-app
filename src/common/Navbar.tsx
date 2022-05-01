@@ -8,7 +8,7 @@ const Navbar: React.FC<{}> = () => {
   const router = useRouter();
 
   return (
-    <Box>
+    <Box as='nav'>
       <Flex justify="space-between" m={4} alignItems={'flex-start'}>
         <Heading onClick={() => router.push('/')} as="button">
           QuizApp
