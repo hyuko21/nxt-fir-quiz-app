@@ -129,7 +129,7 @@ const Home = () => {
           {discipline}, {subject}
         </Text>
         <Text color="gray.500" mt={2}>
-          Posted By: {user.name}
+          Posted By: {user?.name}
         </Text>
         <Text color="gray.500" mt={2}>
           No of Questions: {questions.length}

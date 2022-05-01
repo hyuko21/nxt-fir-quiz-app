@@ -18,8 +18,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 const addQuiz = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const user = await auth.verifyIdToken(req.headers.token as string);
-    const quizData = { ...req.body, userId: user.uid };
+    const userToken = await auth.verifyIdToken(req.headers.token as string, true);
+    const user = await auth.getUser(userToken.uid);
+    const quizData = { ...req.body, user: { id: user.uid, name: user.displayName }};
     await addQuizFb(quizData);
     return res
       .status(200)
@@ -38,15 +39,9 @@ const getAllQuiz = async (req: NextApiRequest, res: NextApiResponse) => {
       subject: req.query.subject as string
     };
     const quizzes = await getAllQuizDb(filter);
-    const users = await getAllUsers({
-      ids: quizzes.map((quiz: any) => quiz.userId)
-    });
-    const data = quizzes.map((quiz: any) => {
-      return { ...quiz, user: users.find((user) => user.id === quiz.userId)};
-    });
     return res
       .status(200)
-      .json({ result: data });
+      .json({ result: quizzes });
   } catch (error) {
     return res
       .status(500)
