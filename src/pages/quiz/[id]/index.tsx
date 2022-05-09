@@ -157,7 +157,7 @@ const SingleQuiz = (props) => {
 
   useEffect(() => {
     if (!auth && !loading) {
-      router.push(`/signin?next=/quiz/${props.quizId}`);
+      router.push(`/signin?next=/quiz/:id&as=/quiz/${props.quizId}`, `/signin?next=/quiz/${props.quizId}`);
     }
   }, [auth, loading]);
 
@@ -167,7 +167,7 @@ const SingleQuiz = (props) => {
     try {
       const resp = await addAnswerApi(auth, props.quizId, values);
       const answerId = resp.data.data.answerId;
-      router.push(`/quiz/${props.quizId}/answer/${answerId}`);
+      router.push('/quiz/:id/answer/:answerId', `/quiz/${props.quizId}/answer/${answerId}`);
     } catch (error) {
       console.log('error', error);
     } finally {

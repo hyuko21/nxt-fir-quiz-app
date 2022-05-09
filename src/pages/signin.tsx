@@ -12,7 +12,7 @@ const signin = () => {
   const router = useRouter();
 
   if (auth) {
-    router.push((router.query.next as string) || '/');
+    router.push((router.query.next as string) || '/', (router.query.as as string) || '/');
   }
 
   return (
