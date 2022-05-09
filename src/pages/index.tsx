@@ -125,7 +125,7 @@ const Home = () => {
   const generateQuizCard = ({ title, discipline, subject, user, questions, description }: any) => {
     return (
       <Box m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="md">
-        <Heading as="h3" size="lg">
+        <Heading as="h3" size="md">
           {title}
         </Heading>
       
