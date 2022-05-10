@@ -159,7 +159,7 @@ const Home = () => {
           {list.map((singleQuiz) => (
             <Box
               key={singleQuiz.id}
-              onClick={() => router.push('/quiz/:id', `/quiz/${singleQuiz.id}`)}
+              onClick={() => router.push('quiz/[id]', `quiz/${singleQuiz.id}`)}
               as="button"
               textAlign="start"
               m={2}
