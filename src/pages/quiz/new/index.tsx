@@ -107,7 +107,7 @@ const Index = () => {
           return {
             ...question,
             options: question.options.map((option) => {
-              return { title: option.title, optionId: uuidv4() };
+              return { title: option.title, optionId: uuidv4(), code: option.code };
             }),
             questionId: uuidv4(),
           };

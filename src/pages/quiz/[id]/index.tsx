@@ -23,6 +23,7 @@ import { useAuth } from '../../../lib/auth';
 import { getSingleQuiz } from '../../../services/db';
 import { addAnswerApi } from '../../../services/api';
 import { ChevronRightIcon } from '@chakra-ui/icons';
+import { QuestionType } from '../../../utils/quiz';
 
 const ShowAnswer = (answer) => {
   const { t } = useTranslation('quiz')
@@ -69,7 +70,7 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
       <Formik initialValues={{}} onSubmit={onSubmit}>
         {(props) => (
           <Form>
-            {quiz.questions.map((singleQuiz, key) => {
+            {quiz.questions.map((question, key) => {
               return (
                 <Box
                   borderWidth='1px'
@@ -78,21 +79,21 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
                   mt={10}
                   key={key}
                   backgroundColor={
-                    answered[singleQuiz.questionId] ? (
-                      answered[singleQuiz.questionId]?.isCorrect
+                    answered[question.questionId] ? (
+                      answered[question.questionId]?.isCorrect
                       ? 'green.100'
                       : 'red.100'
                     ) : 'whiteAlpha.100'
                   }
                 >
-                  <Field name={singleQuiz.questionId}>
+                  <Field name={question.questionId}>
                     {({ field, form }) => (
                       <FormControl
                         isRequired={true}
                         mb={{ base: 4, md: 0 }}
-                        isDisabled={answered[singleQuiz.questionId]}
+                        isDisabled={answered[question.questionId]}
                       >
-                        <Heading mt={4} size="md">{singleQuiz.title}</Heading>
+                        <Heading mt={4} size="md">{question.title}</Heading>
                         <Divider
                           mt={4}
                           mb={4}
@@ -101,31 +102,36 @@ const ShowQuiz = (quiz, answered, onSubmit, onAnswer) => {
                           }}
                         />
                         <RadioGroup
-                          name={singleQuiz.questionId}
-                          onChange={(nextValue) => form.setFieldValue(singleQuiz.questionId, nextValue)}
+                          name={question.questionId}
+                          onChange={(nextValue) => form.setFieldValue(question.questionId, nextValue)}
                         >
                           <Stack mb={2} spacing={2}>
-                            {singleQuiz.options.map((option, subkey) => (
-                              <HStack key={subkey}>
-                                <Radio
-                                  {...field}
-                                  name={singleQuiz.questionId}
-                                  value={option.optionId}
-                                />
-                                <Text fontSize="lg">{option.title}</Text>
-                              </HStack>
-                            ))}
+                            {question.options.map((option, subkey) => {
+                              const optionTitle = question.type === QuestionType.MULTICHOISE ? (
+                                `${option.code}) ${option.title}`
+                              ) : t(option.code)
+                              return (
+                                <HStack key={subkey}>
+                                  <Radio
+                                    {...field}
+                                    name={question.questionId}
+                                    value={option.optionId}
+                                  />
+                                  <Text fontSize="lg">{optionTitle}</Text>
+                                </HStack>
+                              )
+                            })}
                           </Stack>
                         </RadioGroup>
                         <Button
-                          isDisabled={!props.values[singleQuiz.questionId] || answered[singleQuiz.questionId]}
+                          isDisabled={!props.values[question.questionId] || answered[question.questionId]}
                           mt={4}
                           colorScheme="twitter"
-                          onClick={() => onAnswer(singleQuiz, props.values[singleQuiz.questionId])}
+                          onClick={() => onAnswer(question, props.values[question.questionId])}
                         >
                           {t('submitAnswer')}
                         </Button>
-                        {ShowAnswer(answered[singleQuiz.questionId])}
+                        {ShowAnswer(answered[question.questionId])}
                       </FormControl>
                     )}
                   </Field>
