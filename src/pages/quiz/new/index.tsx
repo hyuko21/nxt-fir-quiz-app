@@ -42,7 +42,7 @@ const Index = () => {
 
   useEffect(() => {
     if (!auth && !loading) {
-      router.push('signin?next=quiz/new');
+      router.push('/signin?next=quiz/new');
     }
   }, [auth, loading]);
 

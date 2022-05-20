@@ -56,7 +56,7 @@ export const getSingleQuiz = async (quizId) => {
     .collection('quiz')
     .doc(String(quizId))
     .get();
-  const quizData = snapshot.exists ? JSON.stringify(snapshot.data()) : null;
+  const quizData = snapshot.exists ? snapshot.data() : null;
   return quizData;
 };
 
@@ -89,7 +89,7 @@ export const getAnswer = async (answerId) => {
     .doc(String(answerId))
     .get();
   let answerData = answerSnapshot.exists
-    ? JSON.stringify(answerSnapshot.data())
+    ? answerSnapshot.data()
     : null;
   return answerData;
 };

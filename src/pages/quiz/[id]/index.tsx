@@ -16,14 +16,13 @@ import {
   Box
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
-import { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../lib/auth';
-import { getSingleQuiz } from '../../../services/db';
-import { addAnswerApi } from '../../../services/api';
+import { addAnswerApi, getAllQuizzesApi, safeApiCall } from '../../../services/api';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { QuestionType } from '../../../utils/quiz';
+import { getSingleQuiz } from '../../../services/db';
 
 const ShowAnswer = (answer) => {
   const { t } = useTranslation('quiz')
@@ -162,18 +161,16 @@ const SingleQuiz = (props) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!auth && !loading) {
-      router.push(`signin?next=quiz/[id]&as=quiz/${props.quizId}`);
+    if (!auth && !loading && props.quizId) {
+      router.push(`/signin?next=quiz/[id]&as=/quiz/${props.quizId}`, `/signin?next=quiz/${props.quizId}`);
     }
   }, [auth, loading]);
-
-  const quiz = JSON.parse(props.quiz);
 
   const onSubmit = async (values, actions) => {
     try {
       const resp = await addAnswerApi(auth, props.quizId, values);
       const answerId = resp.data.data.answerId;
-      router.push('quiz/[id]/answer/[answerId]', `quiz/${props.quizId}/answer/${answerId}`);
+      router.push('/quiz/[id]/answer/[answerId]', `/quiz/${props.quizId}/answer/${answerId}`);
     } catch (error) {
       console.log('error', error);
     } finally {
@@ -190,13 +187,20 @@ const SingleQuiz = (props) => {
     setAnswered(prev => ({ ...prev, [question.questionId]: answer, count: prev.count + 1 }))
   }
 
-  return quiz && ShowQuiz(quiz, answered, onSubmit, onAnswer);
+  return props.quiz && ShowQuiz(props.quiz, answered, onSubmit, onAnswer);
 };
 
 export default SingleQuiz;
 
-export async function getServerSideProps(context: NextPageContext & { locale: string }) {
-  const quizId = context.query.id;
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+}
+
+export async function getStaticProps(context) {
+  const quizId = context.params.id;
   const quizData = await getSingleQuiz(quizId);
   return {
     props: {
