@@ -9,7 +9,6 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react';
-import { NextPageContext } from 'next';
 import React from 'react';
 import { getAnswer, getSingleQuiz } from '../../../../services/db';
 
@@ -83,9 +82,16 @@ const answer = (props) => {
   );
 };
 
-export async function getServerSideProps(context: NextPageContext) {
-  const quizId = context.query.id;
-  const answerId = context.query.answerId;
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+}
+
+export async function getStaticProps(context) {
+  const quizId = context.params.id;
+  const answerId = context.params.answerId;
   const quizData = await getSingleQuiz(quizId);
   const answerData = await getAnswer(answerId);
   return { props: { answer: answerData, quiz: quizData } };
