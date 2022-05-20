@@ -27,7 +27,7 @@ export const Footer = () => {
       mt={{ base: '12', md: '16' }}
       py={{ base: '12', md: '16' }}
       backgroundColor={'gray.50'}
-      borderTopRadius={'lg'}
+      borderTopRadius={{ md: 'none', lg: 'lg' }}
     >
       <Stack alignItems='center' justifyContent='center'>
         <AppInfo />
