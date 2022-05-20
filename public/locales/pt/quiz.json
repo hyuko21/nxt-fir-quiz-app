@@ -18,7 +18,7 @@
   
   "submitQuiz": "Salvar $t(quiz, { \"ns\": \"common\" })",
 
-  "correctAnswer": "Você acerto!",
+  "correctAnswer": "Você acertou!",
   "wrongAnswer": "Você errou",
   "submitAnswer": "Responder"
 }
