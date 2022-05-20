@@ -23,6 +23,7 @@ import { addAnswerApi, getAllQuizzesApi, safeApiCall } from '../../../services/a
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { QuestionType } from '../../../utils/quiz';
 import { getSingleQuiz } from '../../../services/db';
+import { Loading } from '../../../common/Loading';
 
 const ShowAnswer = (answer) => {
   const { t } = useTranslation('quiz')
@@ -159,6 +160,10 @@ const SingleQuiz = (props) => {
   const [answered, setAnswered] = useState({ count: 0 });
 
   const router = useRouter();
+
+  if (router.isFallback) {
+    return <Loading />
+  }
 
   useEffect(() => {
     if (!auth && !loading && props.quizId) {
