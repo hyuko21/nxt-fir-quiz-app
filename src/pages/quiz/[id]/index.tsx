@@ -29,21 +29,18 @@ const ShowAnswer = (answer) => {
   const { t } = useTranslation('quiz')
 
   if (!answer) return
-  let Answer: () => React.ReactElement;
+
+  const answerElms: React.ReactElement[] = []
   if (answer.isCorrect) {
-    Answer = () => (
-      <Heading size='md' color='green.500'>{t('correctAnswer')}</Heading>
-    )
+    answerElms.push(<Heading size='md' color='green.500'>{t('correctAnswer')}</Heading>)
   } else {
-    Answer = () => (
-      <>
-        <Heading size='md' color='red.500'>{t('wrongAnswer')}</Heading>
-        {answer.reason && <Text fontSize='lg'><b>{t('answerReason')}:</b> {answer.reason}</Text>}
-      </>
-    )
+    answerElms.push(<Heading size='md' color='red.500'>{t('wrongAnswer')}</Heading>)
+  }
+  if (answer.reason) {
+    answerElms.push(<Text fontSize='lg'><b>{t('answerReason')}:</b> {answer.reason}</Text>)
   }
   return (
-    <Stack mt={8} spacing={2}><Answer /></Stack>
+    <Stack mt={8} spacing={2}>{answerElms}</Stack>
   )
 }
 
