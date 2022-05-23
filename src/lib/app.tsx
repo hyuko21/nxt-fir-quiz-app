@@ -82,19 +82,19 @@ function useProvideApp() {
   const getQuizzes = async (filter: FilterQuiz) => {
     setQuizzes(prev => ({ ...prev, loading: true }))
     const result = await safeApiCall<Quiz[]>(() => getAllQuizzesApi(filter), [])
-    setQuizzes(prev => ({ ...prev, list: result, loading: false }))
+    setQuizzes({ list: result, loading: false })
   }
 
   const getSubjectsByDiscipline = async (disciplineId: string) => {
     setSubjects(prev => ({ ...prev, loading: true }))
     const result = await safeApiCall<Subject[]>(() => getAllSubjectsByDisciplineApi(disciplineId), [])
-    setSubjects(prev => ({ ...prev, list: result, loading: false }))
+    setSubjects({ list: result, loading: false })
   }
 
   const getDisciplines = async () => {
     setDisciplines(prev => ({ ...prev, loading: true }))
     const result = await safeApiCall<Discipline[]>(getAllDisciplinesApi, [])
-    setDisciplines(prev => ({ ...prev, list: result, loading: false }))
+    setDisciplines({ list: result, loading: false })
   }
 
   return {

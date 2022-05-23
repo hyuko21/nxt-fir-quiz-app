@@ -22,11 +22,9 @@ import {
 } from '@chakra-ui/react';
 import { Field, FieldArray, Form, Formik, getIn } from 'formik';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-import { FieldAutoComplete } from '../../../common/FieldAutoComplete';
-import { useApp } from '../../../lib/app';
 import { useAuth } from '../../../lib/auth';
 import { addQuizApi } from '../../../services/api';
 import { getOptionsForQuestionType, QuestionType, questionTypes } from '../../../utils/quiz';
@@ -34,9 +32,9 @@ import { getOptionsForQuestionType, QuestionType, questionTypes } from '../../..
 const Index = () => {
   const { t } = useTranslation(['common', 'footer', 'validation', 'quiz'])
   const { auth, loading } = useAuth();
-  const { disciplines, subjects, getDisciplines, getSubjectsByDiscipline } = useApp();
-  const [selectableDisciplines, setSelectableDisciplines] = useState([])
-  const [selectableSubjects, setSelectableSubjects] = useState([])
+  // const { disciplines, subjects, getDisciplines, getSubjectsByDiscipline } = useApp();
+  // const [selectableDisciplines, setSelectableDisciplines] = useState([])
+  // const [selectableSubjects, setSelectableSubjects] = useState([])
 
   const router = useRouter();
 
@@ -46,18 +44,18 @@ const Index = () => {
     }
   }, [auth, loading]);
 
-  useEffect(() => {
-    getDisciplines()
-  }, [])
+  // useEffect(() => {
+  //   getDisciplines()
+  // }, [])
 
-  useEffect(() => {
-    if (disciplines.list.length) {
-      setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
-    }
-    if (subjects.list.length) {
-      setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
-    }
-  }, [disciplines.list, subjects.list])
+  // useEffect(() => {
+  //   if (disciplines.list.length) {
+  //     setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
+  //   }
+  //   if (subjects.list.length) {
+  //     setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
+  //   }
+  // }, [disciplines.list, subjects.list])
 
   const questionsData = {
     title: '',
@@ -139,7 +137,7 @@ const Index = () => {
       >
         {(props) => (
           <Form>
-            <FieldAutoComplete
+            {/* <FieldAutoComplete
               id='discipline'
               name='discipline'
               label={t('discipline')}
@@ -163,7 +161,33 @@ const Index = () => {
               }}
               isDisabled={!props.values.discipline}
               shouldValidate
-            />
+            /> */}
+            <Field name="discipline">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={form.errors.discipline && form.touched.discipline}
+                >
+                  <FormLabel htmlFor="discipline" fontSize="xl" mt={4}>
+                    {t('discipline')}
+                  </FormLabel>
+                  <Input {...field} id="discipline" />
+                  <FormErrorMessage>{form.errors.discipline}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
+            <Field name="subject">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={form.errors.subject && form.touched.subject}
+                >
+                  <FormLabel htmlFor="subject" fontSize="xl" mt={4}>
+                    {t('subject')}
+                  </FormLabel>
+                  <Input {...field} id="subject" />
+                  <FormErrorMessage>{form.errors.subject}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
             <Field name="title">
               {({ field, form }) => (
                 <FormControl
@@ -216,32 +240,28 @@ const Index = () => {
                           <div>
                             {questions.map((_question, index) => {
                               return (
-                                <Flex key={index} direction="column">
-                                  <FormControl
-                                    isInvalid={errorHandler(
-                                      `questions[${index}][title]`
-                                    )}
-                                  >
-                                    <FormLabel
-                                      htmlFor={`questions[${index}][title]`}
-                                    >
-                                      {t('questionTitle', { ns: 'quiz' })}
-                                    </FormLabel>
-                                    <Input
-                                      name={`questions[${index}][title]`}
-                                      as={Field}
-                                      mb={
-                                        !errorHandler(
+                                <Flex key={index} direction="column" gap={3}>
+                                  <Field name={`questions[${index}][title]`}>
+                                    {({ field: questionTitleField }) => (
+                                      <FormControl
+                                        isInvalid={errorHandler(
                                           `questions[${index}][title]`
-                                        ) && 3
-                                      }
-                                    />
-                                    <FormErrorMessage>
-                                      {errorHandler(
-                                        `questions[${index}][title]`
-                                      )}
-                                    </FormErrorMessage>
-                                  </FormControl>
+                                        )}
+                                      >
+                                        <FormLabel
+                                          htmlFor={`questions[${index}][title]`}
+                                        >
+                                          {t('questionTitle', { ns: 'quiz' })}
+                                        </FormLabel>
+                                        <Input {...questionTitleField} id={`questions[${index}][title]`} />
+                                        <FormErrorMessage>
+                                          {errorHandler(
+                                            `questions[${index}][title]`
+                                          )}
+                                        </FormErrorMessage>
+                                      </FormControl>
+                                    )}
+                                  </Field>
                                   <Field name={`questions[${index}][type]`}>
                                     {({ field: questionTypeField }) => (
                                       <FormControl
@@ -293,28 +313,32 @@ const Index = () => {
                                       mb={{ base: 4 }}
                                     >
                                       {_question.options.map((option, subIndex) => (
-                                        <FormControl
-                                          mb={2}
-                                          key={subIndex}
-                                          isInvalid={errorHandler(
-                                            `questions[${index}][options][${subIndex}].title`
+                                        <Field key={subIndex} name={`questions[${index}][options][${subIndex}].title`}>
+                                          {({ field: questionOptionField }) => (
+                                            <FormControl
+                                              mb={2}
+                                              key={subIndex}
+                                              isInvalid={errorHandler(
+                                                `questions[${index}][options][${subIndex}].title`
+                                              )}
+                                            >
+                                              <FormLabel
+                                                htmlFor={`questions[${index}][options][${subIndex}].title`}
+                                              >
+                                                {t('optionLabel', { ns: 'quiz', val: option.code })}:
+                                              </FormLabel>
+                                              <Input
+                                                {...questionOptionField}
+                                                id={`questions[${index}][options][${subIndex}].title`}
+                                              />
+                                              <FormErrorMessage>
+                                                {errorHandler(
+                                                  `questions[${index}][options][${subIndex}].title`
+                                                )}
+                                              </FormErrorMessage>
+                                            </FormControl>
                                           )}
-                                        >
-                                          <FormLabel
-                                            htmlFor={`questions[${index}][options][${subIndex}].title`}
-                                          >
-                                            {t('optionLabel', { ns: 'quiz', val: option.code })}:
-                                          </FormLabel>
-                                          <Input
-                                            name={`questions[${index}][options][${subIndex}].title`}
-                                            as={Field}
-                                          />
-                                          <FormErrorMessage>
-                                            {errorHandler(
-                                              `questions[${index}][options][${subIndex}].title`
-                                            )}
-                                          </FormErrorMessage>
-                                        </FormControl>
+                                        </Field>
                                       ))}
                                     </SimpleGrid>
                                   )}

@@ -1,42 +1,41 @@
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { Box, Button, Container, Divider, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
-import { Formik, Form } from 'formik';
+import { Box, Button, Container, Divider, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Input, SimpleGrid, Text } from '@chakra-ui/react';
+import { Formik, Form, Field } from 'formik';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { FieldAutoComplete } from '../common/FieldAutoComplete';
 import { useApp } from '../lib/app';
 import { FilterQuiz } from '../services/db';
 
 const ShowFilter = () => {
   const { t } = useTranslation(['common', 'home'])
-  const [selectableDisciplines, setSelectableDisciplines] = useState([])
-  const [selectableSubjects, setSelectableSubjects] = useState([])
+  // const [selectableDisciplines, setSelectableDisciplines] = useState([])
+  // const [selectableSubjects, setSelectableSubjects] = useState([])
   const [filter, setFilter] = useState<FilterQuiz>(null)
   const {
-    disciplines,
-    getDisciplines,
+  //   disciplines,
+  //   getDisciplines,
     getQuizzes,
-    subjects,
-    getSubjectsByDiscipline
+  //   subjects,
+  //   getSubjectsByDiscipline
   } = useApp();
 
-  useEffect(() => {
-    getDisciplines()
-  }, [])
+  // useEffect(() => {
+  //   getDisciplines()
+  // }, [])
 
   useEffect(() => {
     getQuizzes(filter)
   }, [filter])
 
-  useEffect(() => {
-    if (disciplines.list.length) {
-      setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
-    }
-    if (subjects.list.length) {
-      setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
-    }
-  }, [disciplines.list, subjects.list])
+  // useEffect(() => {
+  //   if (disciplines.list.length) {
+  //     setSelectableDisciplines(disciplines.list.map((item) => ({ label: item.name, value: item.id })))
+  //   }
+  //   if (subjects.list.length) {
+  //     setSelectableSubjects(subjects.list.map((item) => ({ label: item.name, value: item.id })))
+  //   }
+  // }, [disciplines.list, subjects.list])
 
   const initialValues = { discipline: '', subject: '' }
 
@@ -56,7 +55,7 @@ const ShowFilter = () => {
       >
         {({ setFieldValue, values, resetForm }) => (
           <Form>
-            <FieldAutoComplete
+            {/* <FieldAutoComplete
               id='discipline'
               name='discipline'
               label={t('discipline')}
@@ -78,7 +77,33 @@ const ShowFilter = () => {
               onSelect={(item) => {
                 setFieldValue('subject', item?.label)
               }}
-            />
+            /> */}
+            <Field name="discipline">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={form.errors.discipline && form.touched.discipline}
+                >
+                  <FormLabel htmlFor="discipline" fontSize="xl" mt={4}>
+                    {t('discipline')}
+                  </FormLabel>
+                  <Input {...field} id="discipline" />
+                  <FormErrorMessage>{form.errors.discipline}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
+            <Field name="subject">
+              {({ field, form }) => (
+                <FormControl
+                  isInvalid={form.errors.subject && form.touched.subject}
+                >
+                  <FormLabel htmlFor="subject" fontSize="xl" mt={4}>
+                    {t('subject')}
+                  </FormLabel>
+                  <Input {...field} id="subject" />
+                  <FormErrorMessage>{form.errors.subject}</FormErrorMessage>
+                </FormControl>
+              )}
+            </Field>
             <Flex justifyContent='flex-end' gap='12px'>
               {filter && (
                 <Button
@@ -93,7 +118,7 @@ const ShowFilter = () => {
                 </Button>
               )}
               <Button
-                isDisabled={!values.discipline || !values.subject}
+                isDisabled={!values.discipline && !values.subject}
                 mt={4}
                 colorScheme="twitter"
                 onClick={() => {
