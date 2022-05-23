@@ -71,7 +71,7 @@ const Index = () => {
     discipline: '',
     subject: '',
     title: '',
-    description: '',
+    // description: '',
     questions: [questionsData],
   };
 
@@ -79,7 +79,7 @@ const Index = () => {
     discipline: yup.string().required(t('required', { ns: 'validation' })),
     subject: yup.string().required(t('required', { ns: 'validation' })),
     title: yup.string().required(t('required', { ns: 'validation' })),
-    description: yup.string(),
+    // description: yup.string(),
     questions: yup
       .array()
       .of(
@@ -177,7 +177,7 @@ const Index = () => {
                 </FormControl>
               )}
             </Field>
-            <Field name="description">
+            {/* <Field name="description">
               {({ field, form }) => (
                 <FormControl
                   isInvalid={
@@ -193,7 +193,7 @@ const Index = () => {
                   </FormErrorMessage>
                 </FormControl>
               )}
-            </Field>
+            </Field> */}
             <Field name="questions">
               {({ field }) => (
                 <FormControl>
