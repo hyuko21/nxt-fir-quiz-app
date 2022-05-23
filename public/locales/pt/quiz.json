@@ -6,7 +6,7 @@
   "description": "Descrição",
   
   "questionData": "Dados de questões",
-  "questionTitle": "$t(title) da questão",
+  "questionTitle": "Enunciado da questão",
   "questionType": "Tipo de questão",
   "multichoiseType": "Múltipla Escolha",
   "trueorfalseType": "Verdadeiro ou Falso",
