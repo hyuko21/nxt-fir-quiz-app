@@ -253,7 +253,7 @@ const Index = () => {
                                         >
                                           {t('questionTitle', { ns: 'quiz' })}
                                         </FormLabel>
-                                        <Input {...questionTitleField} id={`questions[${index}][title]`} />
+                                        <Textarea {...questionTitleField} id={`questions[${index}][title]`} />
                                         <FormErrorMessage>
                                           {errorHandler(
                                             `questions[${index}][title]`
